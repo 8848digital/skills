@@ -25,6 +25,10 @@ class Expense(Document):
 
 The class name is the DocType name with spaces removed (e.g. "Expense Category" → `ExpenseCategory`).
 
+> This example inlines a trivial one-liner for brevity. For anything beyond a
+> single simple expression, follow the file structure rules below — hooks
+> should call out to a function, not contain the logic themselves.
+
 ## Document lifecycle hooks
 
 Called in this order:
@@ -69,6 +73,47 @@ Called in this order:
 ### On delete
 1. `on_trash`
 2. `after_delete`
+
+## File structure: hooks vs. logic
+
+`<doctype_name>.py` (e.g. `operation_card.py`) is for wiring lifecycle hooks
+(`validate`, `on_submit`, `on_cancel`, etc.) to logic — not for containing that
+logic. Each hook should call out to a function rather than implement the
+behavior inline.
+
+```python
+# operation_card.py — hooks only, delegate to helpers
+import frappe
+from frappe.model.document import Document
+from myapp.myapp.doctype.operation_card.operation_card_utils import (
+    validate_operation,
+    apply_status,
+)
+
+class OperationCard(Document):
+    def validate(self):
+        validate_operation(self)
+
+    def on_submit(self):
+        apply_status(self, "Submitted")
+```
+
+- Place the actual implementation in sibling files within the same doctype
+  directory (e.g. `operation_card_utils.py`, `operation_card_service.py`) —
+  not inline in the hook method.
+- **If a hook needs to update another doctype's records**, place that logic in
+  *that* doctype's own directory (e.g. a function in
+  `sales_order/sales_order_utils.py`) and call it from the triggering
+  doctype's hook, rather than writing another doctype's update logic inline
+  where the hook fires. This keeps each doctype's data-mutation logic owned
+  by that doctype's module.
+  - Exception: doctypes you don't own (core Frappe/ERPNext, or another app's
+    doctype) — don't add files into their directory. Put that logic in your
+    own app instead, in a module named for what it does (e.g.
+    `myapp/integrations/sales_order_sync.py`), and call it from your hook.
+- Name files and variables after what they represent, not how they're used —
+  e.g. `operation_card_utils.py` not `helpers.py` or `misc.py`;
+  `apply_status` not `do_thing`.
 
 ## Common patterns
 
@@ -115,17 +160,30 @@ doc.save()
 ## Anti-patterns
 
 - **Don't use `frappe.db.set_value` for fields with validation logic.** It bypasses `validate()`, `before_save()`, and all lifecycle hooks. Never use it for status fields or state transitions. Use it only for simple counters, timestamps, or cached values.
-  ```python
+```python
   # BAD — skips controller validation
   frappe.db.set_value("Expense", name, "status", "Approved")
   # GOOD
   doc = frappe.get_doc("Expense", name)
   doc.status = "Approved"
   doc.save()
-  ```
+```
 - **Don't call `frappe.db.commit()` in controller methods or request handlers.** See the Transactions section in [database](./database.md) reference.
+- **Don't write business logic directly in `<doctype_name>.py` hooks.** Hook methods should call a function, not implement the behavior — see File structure above.
+```python
+  # BAD — logic inline in the hook
+  def validate(self):
+      if self.amount > 10000 and not self.approver:
+          frappe.throw("Approver required for amounts over 10,000")
+      self.tax = self.amount * frappe.db.get_single_value("Tax Settings", "rate")
+
+  # GOOD — hook delegates
+  def validate(self):
+      validate_approval_requirement(self)
+      self.tax = calculate_tax(self.amount)
+```
 - **Put permission checks inside controller methods**, not in API wrapper helpers. This ensures enforcement regardless of call path (API, desk, background job).
-  ```python
+```python
   # BAD — check in api.py wrapper
   def _get_manager_doc(name):
       if "Expense Manager" not in frappe.get_roles(): ...
@@ -135,5 +193,5 @@ doc.save()
       def approve(self):
           if "Expense Manager" not in frappe.get_roles():
               frappe.throw("Not allowed", frappe.PermissionError)
-  ```
+```
 - **Be consistent with permission checks across all controller methods.** If some methods on a DocType check for a role explicitly, all mutating methods should do the same — don't rely on implicit DocType perms for some and explicit checks for others.

@@ -84,6 +84,21 @@ apps/<app>/<app>/api/
     reports.py
 ```
 
+### Doctype-scoped `api.py`
+
+When an app needs custom whitelisted endpoints tied to one doctype but separate from the controller (e.g. a REST-style resource layer), place `api.py` inside that doctype's own folder — not in a shared `api/` directory.
+
+```
+apps/<app>/<app>/<module>/doctype/expense/
+    expense.py         # controller (Document class, doc hooks)
+    api.py              # thin whitelisted entry points only
+    expense_utils.py    # business logic, called by api.py
+```
+
+- `api.py` holds only `@frappe.whitelist()` functions that validate input, call logic elsewhere, and return a response. No business logic lives here.
+- Non-whitelisted helper/business-logic functions live in other files in the same doctype folder (e.g. `expense_utils.py`), not inside `api.py`.
+- This keeps whitelisted surface area easy to audit — you can scan `api.py` and see every entry point without wading through implementation.
+
 ## Allow guest access
 
 ```python
@@ -117,6 +132,112 @@ data = frappe.form_dict
 ```python
 frappe.response["meta"] = meta
 ```
+
+## API response standard
+
+Every custom-built API (in `api.py`, `api/`, or versioned frontend endpoints) must return a consistent response shape rather than a raw dict, so frontend/client code can rely on one contract.
+
+### Standard shape
+
+```json
+{
+    "status": true,
+    "status_code": 200,
+    "message": "Success",
+    "data": {},
+    "errors": null
+}
+```
+
+- `status` (bool, required) — success or failure
+- `status_code` (int, required) — HTTP status code, must match the actual response status
+- `message` (str, required) — human-readable, safe to show to a user
+- `data` (object/array/null, required) — payload on success; `null` on failure
+- `errors` (object/array/null, optional) — validation/business-rule error detail; `null` on success
+
+### Examples
+
+Success:
+```json
+{
+    "status": true,
+    "status_code": 200,
+    "message": "Customer details fetched successfully",
+    "data": { "customer": "CUST-0001", "customer_name": "ABC Pvt Ltd" },
+    "errors": null
+}
+```
+
+Validation error:
+```json
+{
+    "status": false,
+    "status_code": 400,
+    "message": "Validation failed",
+    "data": null,
+    "errors": { "customer": "Customer is mandatory" }
+}
+```
+
+### Status codes
+
+| Code | Meaning |
+|------|---------|
+| 200 | Success |
+| 201 | Record created |
+| 204 | No content |
+| 400 | Validation error |
+| 401 | Authentication failed |
+| 403 | Permission denied |
+| 404 | Record not found |
+| 409 | Duplicate record / conflict |
+| 422 | Business rule validation failed |
+| 429 | Too many requests |
+| 500 | Internal server error |
+
+### Rules
+
+- Always return JSON with `status`, `status_code`, and `message` present.
+- Never expose Python tracebacks or raw database errors — catch and translate into `message`/`errors`.
+- `data` is populated only on success; leave it `null` on failure.
+- `errors` carries validation/business-rule failure detail; leave it `null` on success.
+- Keep `message` human-readable — it may be shown directly in a UI.
+- The HTTP status actually returned must match `status_code` in the body.
+
+### Helper
+
+Define once per app and reuse everywhere a whitelisted endpoint returns:
+
+```python
+def api_response(status=True, code=200, message="", data=None, errors=None):
+    return {
+        "status": status,
+        "status_code": code,
+        "message": message,
+        "data": data,
+        "errors": errors,
+    }
+```
+
+## Frontend API structure (versioned APIs)
+
+For apps serving a dedicated frontend (e.g. React), version the API surface separately from internal doctype APIs, so frontend contracts can evolve independently of internal logic.
+
+```
+apps/<app>/<app>/api/
+    v1.py           # main v1 controller — routes/re-exports v1 endpoints
+    v1/
+        __init__.py
+        cart.py
+        item_list.py
+        sales_order.py
+```
+
+- Version from the start (`v1/`, `v2/`, ...) even if only one version exists — retrofitting versioning later breaks existing frontend clients.
+- Keep the top-level version file (e.g. `v1.py`) as the entry controller; it stays thin and routes to resource files under `v1/`.
+- Split endpoints by resource/feature (`cart.py`, `sales_order.py`), not by HTTP verb or a single catch-all file.
+- When introducing `v2`, keep `v1` intact and functioning — don't break existing frontend clients still pointed at v1. Only remove a version after all clients have migrated.
+- Every endpoint under `api/vN/` follows the API response standard above.
 
 ## Built-in document APIs (v2)
 
@@ -169,4 +290,6 @@ def get_or_create_token(): ...
 
 - **Don't wrap doc methods in standalone APIs.** If the controller has `@frappe.whitelist()` on a method, clients call it directly via `frm.call("approve")` or `POST /api/v2/document/Expense/EXP-001/method/approve`. Don't create a separate `api.py` function that just fetches the doc and calls the same method.
 - **Don't put doc-scoped logic in standalone APIs.** If the function fetches one doc, validates the caller, and acts on that doc — it belongs as a doc-level `@frappe.whitelist()` method, not in `api/`. Reserve standalone APIs for cross-document operations, aggregations, or endpoints with no document context.
+- **Don't write business logic inside `api.py`.** `api.py` (whether app-level or doctype-scoped) should only contain thin whitelisted functions that validate, delegate, and format the response. Put actual logic in a sibling module and import it.
+- **Don't return raw dicts or unstructured errors from custom endpoints.** Use the API response standard consistently so frontend code doesn't need per-endpoint special-casing.
 - **Don't leak sensitive fields in guest APIs.** With `allow_guest=True`, only return fields guests need. Never expose `user` (email), internal IDs, or permission-sensitive data.

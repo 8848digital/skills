@@ -38,6 +38,23 @@ exists = frappe.db.exists("Expense", {"title": "Lunch", "status": "Draft"})
 
 Use `get_all` for server-side logic. Use `get_list` in user-facing APIs.
 
+## `frappe.get_doc` vs value-only fetches
+
+`frappe.get_doc` loads the full document — controller instance, child tables, and triggers document-level permission checks. Only use it when you actually need the document object (to call a method, mutate and `.save()`, or work with child tables).
+
+If you only need one or more field values and don't need to mutate or call methods on the document, use the lighter read:
+
+```python
+# BAD — loads the whole document just to read two fields
+doc = frappe.get_doc("Expense", "EXP-0001")
+amount, status = doc.amount, doc.status
+
+# GOOD
+amount, status = frappe.db.get_value("Expense", "EXP-0001", ["amount", "status"])
+```
+
+For multiple records, use `get_all`/`get_list` rather than loading each with `get_doc` in a loop (see N+1 note below).
+
 ## Writing data
 
 ```python
@@ -170,20 +187,49 @@ query = (
 results = query.run(as_dict=True)
 ```
 
+## Raw SQL (`frappe.db.sql`)
+
+Use `frappe.db.sql` only for queries `frappe.qb` cannot express (CTEs, window functions, complex unions, etc.) — see Anti-patterns below.
+
+- **Never call functions inline inside the query string.** Compute the value first, store it in a variable, then pass it as a parameter. This applies whether the "function" is a Python call being interpolated or a SQL function whose result should be precomputed in Python.
+```python
+  # BAD — computed inline, and string-built (SQL injection risk, unreadable)
+  frappe.db.sql(f"SELECT * FROM `tabExpense` WHERE status = '{get_current_status()}'")
+
+  # GOOD — compute first, pass as parameter
+  current_status = get_current_status()
+  frappe.db.sql("SELECT * FROM `tabExpense` WHERE status = %s", (current_status,))
+```
+  Always use `%s` placeholders with a parameter tuple/dict — never f-strings or `.format()`/`%` string interpolation to build a query. This is a correctness and security rule, not just style.
+- **Format multi-line queries with clear indentation** — one clause per line, aligned, so the query is scannable:
+```python
+  frappe.db.sql("""
+      SELECT
+          name, amount, status
+      FROM
+          `tabExpense`
+      WHERE
+          status = %s
+          AND amount > %s
+      ORDER BY
+          creation DESC
+  """, (status, min_amount))
+```
+- **Move large/complex raw SQL queries into their own file** (e.g. a `queries.py` alongside the module, or a `.sql` file loaded and formatted) rather than inlining a long multi-line string in the middle of business logic. Keep the calling function focused on orchestration, not query text.
+
 ## Anti-patterns
 
 - **Don't use raw SQL when `frappe.qb` works.** Prefer the query builder for UPDATE/INSERT. Use `frappe.db.sql` only for queries `frappe.qb` cannot express (CTEs, etc.).
-  ```python
+```python
   # BAD
   frappe.db.sql("UPDATE `tabExpense` SET `amount` = `amount` + 1 WHERE name = %s", (name,))
   # GOOD
   Expense = frappe.qb.DocType("Expense")
   frappe.qb.update(Expense).set(Expense.amount, Expense.amount + 1).where(Expense.name == name).run()
-  ```
+```
 - **Don't make multiple queries when one will do.** Use OR filters via `frappe.qb.get_query` instead of chaining `frappe.db.get_value(...) or frappe.db.get_value(...)`.
-- **Use `frappe.db.delete` for bulk deletion when the DocType has no `on_trash`/`after_delete` hooks.** It runs a single DELETE query. Use `frappe.delete_doc` in a loop only when controller trash hooks need to fire.
-- **Batch-fetch related records instead of querying in a loop.**
-  ```python
+- **Don't run any data-fetching call inside a for-loop** — `frappe.db.sql`, `frappe.db.get_value`, `frappe.db.get_all`, `frappe.db.get_list`, or `frappe.get_doc`. Each iteration is a separate DB round trip (N+1). Batch-fetch before the loop and look up from an in-memory map instead.
+```python
   # BAD — N+1
   for exp in expenses:
       exp.category_label = frappe.db.get_value("Expense Category", exp.category, "label")
@@ -192,4 +238,7 @@ results = query.run(as_dict=True)
   cat_map = {c.name: c.label for c in frappe.get_all("Expense Category", filters={"name": ["in", list(cat_ids)]}, fields=["name", "label"])}
   for exp in expenses:
       exp.category_label = cat_map.get(exp.category)
-  ```
+```
+- **Use `frappe.db.delete` for bulk deletion when the DocType has no `on_trash`/`after_delete` hooks.** It runs a single DELETE query. Use `frappe.delete_doc` in a loop only when controller trash hooks need to fire.
+- **Don't reach for `frappe.get_doc` for read-only, multi-field fetches.** If you're not calling document methods or saving, use `frappe.db.get_value`/`get_all`/`get_list` instead — `get_doc` is heavier and triggers unnecessary permission/hook overhead.
+- **Batch-fetch related records instead of querying in a loop.** (see N+1 example above)
