@@ -136,13 +136,6 @@ Replace `<app_name>` with the actual app name (snake_case).
 │   │   │       ├── blanket_order_tracking_report.json
 │   │   │       ├── blanket_order_tracking_report.py
 │   │   │       └── (other business logic files)
-│   │   │
-│   │   ├── scheduler/                 ← Scheduled-task functions (called from hooks.py)
-│   │   │   ├── creatives.py
-│   │   │   ├── payment_reminder_mail.py
-│   │   │   ├── prize_agreement_overdue.py
-│   │   │   └── prize_agreement.py
-│   │   │
 │   │   ├── web_form/                  ← Portal web forms (one sub-folder each)
 │   │   │   ├── __init__.py
 │   │   │   ├── agent/
@@ -187,8 +180,6 @@ Replace `<app_name>` with the actual app name (snake_case).
 │   │       ├── ticket_web_form.js
 │   │       └── workflow_action.js
 │   │
-│   ├── scripts/                       ← Dev/CI helper scripts (not shipped to prod)
-│   │   └── check_max_lines.py
 │   │
 │   ├── templates/                     ← Jinja templates for portal pages
 │   │   ├── pages/
@@ -222,7 +213,6 @@ Replace `<app_name>` with the actual app name (snake_case).
 | `<module>/doctype/` | DocTypes **this app owns** — standard controller layout. |
 | `<module>/print_format/` | Custom print format JSON (and JS if using a script-based format). |
 | `<module>/report/` | Query / script reports. |
-| `<module>/scheduler/` | Functions registered in `hooks.py`'s `scheduler_events` — one file per scheduled job / domain. |
 | `<module>/web_form/` | Portal-facing web forms. |
 | `<module>/workspace/` | Desk workspace JSON. |
 | `commands/` | Custom `bench` CLI commands for this app. |
@@ -244,7 +234,6 @@ Replace `<app_name>` with the actual app name (snake_case).
 | ---- | ---- |
 | **API versioning** | All public endpoints live under `api/v1/`. Never put versioned logic directly in the module root. |
 | **Customization vs DocType** | Use `customization/` for overriding standard ERPNext/Frappe documents. Use `doctype/` for net-new custom DocTypes only. |
-| **Scheduler tasks** | Define callable functions in `scheduler/*.py`. Wire them via `hooks.py` `scheduler_events`. Never put scheduled logic directly in `hooks.py`. |
 | **Fixtures** | Keep fixture JSON files in `fixtures/`. Export via the custom `commands/export_fixtures.py` bench command. |
 | **Public JS bundles** | `public/js/<app_name>.bundle.js` is the Webpack entry point. Additional form scripts go in the appropriate `doctype/` or `customization/` folder, **not** in `public/js/`. |
 | **Print formats** | One sub-folder per format under `print_format/`. Each folder must contain `__init__.py` + the JSON definition. |
