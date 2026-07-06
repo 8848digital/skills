@@ -96,7 +96,7 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 │   │   │   ├── before_request.py      ← Pre-request guards / auth checks
 │   │   │   └── response_formatter.py  ← Standardised JSON envelope helpers
 │   │   │
-│   │   ├── customization/             ← Overrides for standard Frappe/ERPNext docs
+│   │   ├── customization/             ← Extend / override standard ERPNext/Frappe documents functionality
 │   │   │   └── customer/
 │   │   │       ├── bank.py
 │   │   │       ├── customer.js        ← Client-side form script
@@ -207,7 +207,7 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 | Directory | Purpose |
 | --------- | ------- |
 | `<module_name>/api/` | The **only** location for versioned, custom whitelisted endpoints not tied to a single DocType this app owns. See versioning pattern below. No `api/` folder or `api.py` file may exist anywhere else in the app. |
-| `<module_name>/customization/` | Hook logic and thin business-logic files for DocTypes **owned by another app** (core Frappe/ERPNext, or a different installed app) that this app extends. Never place an `api.py` here — whitelisted endpoints belong under `<module_name>/api/`. |
+| `<module_name>/customization/` | Extend / override standard ERPNext/Frappe documents functionality — hook logic and thin business-logic files for DocTypes **owned by another app** (core Frappe/ERPNext, or a different installed app). Never place an `api.py` here — whitelisted endpoints belong under `<module_name>/api/`. |
 | `<module_name>/dashboard/` | Chart / number-card / dashboard data providers. |
 | `<module_name>/doctype/` | DocTypes **this app owns** — standard controller layout. Never place an `api.py` here — whitelisted endpoints belong under `<module_name>/api/`. |
 | `<module_name>/print_format/` | Custom print format JSON (and JS if using a script-based format). |
@@ -232,11 +232,12 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 | Area | Rule |
 | ---- | ---- |
 | **`<module_name>` naming** | The module directory must be named distinctly from `<app_name>`. Never reuse the app's own name as the module name. |
+| **Customization folder naming** | The folder for extending/overriding standard ERPNext/Frappe documents functionality must be named `customization/`. Never name it `custom/` or any other variant. |
 | **API location** | All API code — `api.py` files, `api/` folders, and versioned endpoint files — lives **only** under `<module_name>/api/`. It must never appear inside `doctype/`, `customization/`, or as a standalone folder anywhere else in the app. |
 | **Whitelisting** | `@frappe.whitelist()` may only be used on functions inside `<module_name>/api/`. Never whitelist a method or function inside `doctype/<name>/<name>.py` or `customization/<name>/*.py` — controller and customization files hold plain, non-whitelisted logic; expose it via a thin wrapper in `<module_name>/api/`. |
 | **API versioning** | All public endpoints live under `<module_name>/api/v1/`. Never put versioned logic directly in the module root. |
 | **API docstrings** | Every `@frappe.whitelist()` function must have a docstring documenting a 2–3 line explanation, the endpoint path, HTTP method, parameters (name, type, required/optional, description), and the response format. Dotted paths use the `<app_name>.<module_name>` convention. See [api.md](./skills/frappe-app-dev/references/api.md) for the required template. |
-| **Customization vs DocType** | Use `customization/` for overriding standard ERPNext/Frappe documents. Use `doctype/` for net-new custom DocTypes only. Neither folder may contain API code. |
+| **Customization vs DocType** | Use `customization/` to extend / override standard ERPNext/Frappe documents functionality. Use `doctype/` for net-new custom DocTypes only. Neither folder may contain API code. |
 | **Fixtures** | Keep fixture JSON files in `fixtures/`. Export via the custom `commands/export_fixtures.py` bench command. |
 | **Public JS bundles** | `public/js/<app_name>.bundle.js` is the Webpack entry point. Additional form scripts go in the appropriate `doctype/` or `customization/` folder, **not** in `public/js/`. |
 | **Print formats** | One sub-folder per format under `print_format/`. Each folder must contain `__init__.py` + the JSON definition. |
@@ -340,3 +341,6 @@ App-wide custom APIs (not scoped to one DocType) are versioned, and live
   internally — see [api.md](./skills/frappe-app-dev/references/api.md).
 - **Don't name the module directory the same as the app.** `<module_name>`
   must be a distinct, meaningful name — never a repeat of `<app_name>`.
+- **Don't use `custom/` as a folder name.** The folder for extending or
+  overriding standard ERPNext/Frappe documents functionality must always be
+  named `customization/` — never `custom/` or any other shortened variant.

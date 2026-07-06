@@ -37,4 +37,6 @@ Skills are matched by the `name` field in each `SKILL.md` frontmatter, and live 
 
 Once installed, each skill activates automatically when you ask your agent about a matching task — creating DocTypes, building a Vue SPA, or running `bench migrate` (`frappe-app-dev`); enforcing code style (`code-style`); UI/UX judgment (`ui-design`); and so on.
 
+## New Custom App
+
 When creating a new app, refer to this document: [Custom App Setup](https://past-cap-0c8.notion.site/Custom-App-Setup-101-e9ce160bc9614d4b9420b9c4cbe13fce)
