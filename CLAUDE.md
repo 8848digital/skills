@@ -81,23 +81,23 @@ Then load only the feature references you need for the task:
 
 All custom Frappe apps in this project follow the layout below.
 Replace `<app_name>` with the actual app name (snake_case).
+Replace `<module_name>` with the actual module name (snake_case). **`<module_name>` must never be the same string as `<app_name>`** — the module directory is a distinct, purposefully-named submodule of the app package, not a repeat of the app's own name.
 
 ```
 <app_name>/                            ← repo root
 ├── <app_name>/                        ← Python package (pip-installable)
-│   ├── api/                           ← Versioned public REST endpoints
-│   │   ├── v1/
-│   │   │   ├── bank.py
-│   │   │   ├── braniac.py
-│   │   │   └── company.py
-│   │   ├── api_error_handler.py       ← Centralised exception → HTTP response
-│   │   ├── before_request.py          ← Pre-request guards / auth checks
-│   │   └── response_formatter.py      ← Standardised JSON envelope helpers
-│   │
-│   ├── <app_name>/                    ← Module directory (same name as app)
+│   ├── <module_name>/                 ← Module directory (name MUST differ from <app_name>)
+│   │   ├── api/                       ← ALL versioned public REST endpoints live here — and ONLY here
+│   │   │   ├── v1/
+│   │   │   │   ├── bank.py
+│   │   │   │   ├── braniac.py
+│   │   │   │   └── company.py
+│   │   │   ├── api_error_handler.py   ← Centralised exception → HTTP response
+│   │   │   ├── before_request.py      ← Pre-request guards / auth checks
+│   │   │   └── response_formatter.py  ← Standardised JSON envelope helpers
+│   │   │
 │   │   ├── customization/             ← Overrides for standard Frappe/ERPNext docs
 │   │   │   └── customer/
-│   │   │       ├── api.py             ← Whitelisted endpoints for this doc
 │   │   │       ├── bank.py
 │   │   │       ├── customer.js        ← Client-side form script
 │   │   │       ├── customer.py        ← Server-side controller / hooks
@@ -105,7 +105,7 @@ Replace `<app_name>` with the actual app name (snake_case).
 │   │   │       ├── social_media.py
 │   │   │       ├── sponsor.py
 │   │   │       ├── utils.py
-│   │   │       └── (other business logic files)
+│   │   │       └── (other business logic files — no api.py here, see below)
 │   │   │
 │   │   ├── dashboard/                 ← Dashboard chart / number-card scripts
 │   │   │   ├── prize_agreement.py
@@ -118,7 +118,7 @@ Replace `<app_name>` with the actual app name (snake_case).
 │   │   │       ├── creatives.js       ← Client script
 │   │   │       ├── creatives.json     ← DocType definition (source of truth)
 │   │   │       ├── creatives.py       ← Controller
-│   │   │       └── (other business logic files)
+│   │   │       └── (other business logic files — no api.py here, see below)
 │   │   │
 │   │   ├── print_format/              ← Custom print format definitions
 │   │   │   ├── __init__.py
@@ -187,7 +187,6 @@ Replace `<app_name>` with the actual app name (snake_case).
 │   │   └── __init__.py
 │   │
 │   ├── __init__.py
-│   ├── boot_session.py                ← Data injected into every boot payload
 │   ├── hooks.py                       ← App hooks wiring everything together
 │   ├── install.py                     ← Post-install setup (run once on install)
 │   ├── modules.txt                    ← List of modules in this app
@@ -207,14 +206,14 @@ Replace `<app_name>` with the actual app name (snake_case).
 
 | Directory | Purpose |
 | --------- | ------- |
-| `api/` | Versioned, custom whitelisted endpoints not tied to a single DocType this app owns. See versioning pattern below. |
-| `<module>/customization/` | Hook logic and thin API wrappers for DocTypes **owned by another app** (core Frappe/ERPNext, or a different installed app) that this app extends. |
-| `<module>/dashboard/` | Chart / number-card / dashboard data providers. |
-| `<module>/doctype/` | DocTypes **this app owns** — standard controller layout. |
-| `<module>/print_format/` | Custom print format JSON (and JS if using a script-based format). |
-| `<module>/report/` | Query / script reports. |
-| `<module>/web_form/` | Portal-facing web forms. |
-| `<module>/workspace/` | Desk workspace JSON. |
+| `<module_name>/api/` | The **only** location for versioned, custom whitelisted endpoints not tied to a single DocType this app owns. See versioning pattern below. No `api/` folder or `api.py` file may exist anywhere else in the app. |
+| `<module_name>/customization/` | Hook logic and thin business-logic files for DocTypes **owned by another app** (core Frappe/ERPNext, or a different installed app) that this app extends. Never place an `api.py` here — whitelisted endpoints belong under `<module_name>/api/`. |
+| `<module_name>/dashboard/` | Chart / number-card / dashboard data providers. |
+| `<module_name>/doctype/` | DocTypes **this app owns** — standard controller layout. Never place an `api.py` here — whitelisted endpoints belong under `<module_name>/api/`. |
+| `<module_name>/print_format/` | Custom print format JSON (and JS if using a script-based format). |
+| `<module_name>/report/` | Query / script reports. |
+| `<module_name>/web_form/` | Portal-facing web forms. |
+| `<module_name>/workspace/` | Desk workspace JSON. |
 | `commands/` | Custom `bench` CLI commands for this app. |
 | `config/` | App config (desktop icons, module config). |
 | `fixtures/` | Data exported via `fixtures` in `hooks.py`, synced across sites/environments. |
@@ -232,8 +231,12 @@ Replace `<app_name>` with the actual app name (snake_case).
 
 | Area | Rule |
 | ---- | ---- |
-| **API versioning** | All public endpoints live under `api/v1/`. Never put versioned logic directly in the module root. |
-| **Customization vs DocType** | Use `customization/` for overriding standard ERPNext/Frappe documents. Use `doctype/` for net-new custom DocTypes only. |
+| **`<module_name>` naming** | The module directory must be named distinctly from `<app_name>`. Never reuse the app's own name as the module name. |
+| **API location** | All API code — `api.py` files, `api/` folders, and versioned endpoint files — lives **only** under `<module_name>/api/`. It must never appear inside `doctype/`, `customization/`, or as a standalone folder anywhere else in the app. |
+| **Whitelisting** | `@frappe.whitelist()` may only be used on functions inside `<module_name>/api/`. Never whitelist a method or function inside `doctype/<name>/<name>.py` or `customization/<name>/*.py` — controller and customization files hold plain, non-whitelisted logic; expose it via a thin wrapper in `<module_name>/api/`. |
+| **API versioning** | All public endpoints live under `<module_name>/api/v1/`. Never put versioned logic directly in the module root. |
+| **API docstrings** | Every `@frappe.whitelist()` function must have a docstring documenting a 2–3 line explanation, the endpoint path, HTTP method, parameters (name, type, required/optional, description), and the response format. Dotted paths use the `<app_name>.<module_name>` convention. See [api.md](./skills/frappe-app-dev/references/api.md) for the required template. |
+| **Customization vs DocType** | Use `customization/` for overriding standard ERPNext/Frappe documents. Use `doctype/` for net-new custom DocTypes only. Neither folder may contain API code. |
 | **Fixtures** | Keep fixture JSON files in `fixtures/`. Export via the custom `commands/export_fixtures.py` bench command. |
 | **Public JS bundles** | `public/js/<app_name>.bundle.js` is the Webpack entry point. Additional form scripts go in the appropriate `doctype/` or `customization/` folder, **not** in `public/js/`. |
 | **Print formats** | One sub-folder per format under `print_format/`. Each folder must contain `__init__.py` + the JSON definition. |
@@ -255,13 +258,14 @@ Both hold Python logic tied to a DocType, but **ownership** differs:
   subclass for it, so instead:
   - `<name>.py` holds `doc_events` hook functions (registered in `hooks.py`,
     not as class methods).
-  - `api.py` holds whitelisted endpoints scoped to that customization.
   - `utils.py` / feature-named files hold the actual logic.
   - `<name>.js` holds client-script customizations for that doctype's form.
+  - Any whitelisted endpoint scoped to this customization still belongs
+    under `<module_name>/api/` — **not** inside `customization/<name>/`.
 
 ```python
 # customization/customer/customer.py — doc_events hook, NOT a Document subclass
-from myapp.myapp.customization.customer.utils import sync_customer_kyc
+from <app_name>.<module_name>.customization.customer.utils import sync_customer_kyc
 
 def on_update(doc, method):
     sync_customer_kyc(doc)
@@ -271,25 +275,31 @@ def on_update(doc, method):
 # hooks.py
 doc_events = {
     "Customer": {
-        "on_update": "myapp.myapp.customization.customer.customer.on_update"
+        "on_update": "<app_name>.<module_name>.customization.customer.customer.on_update"
     }
 }
 ```
+
+Note: neither `customer.py` nor `utils.py` here may contain `@frappe.whitelist()`
+— any whitelisted endpoint touching Customer still lives under
+`<module_name>/api/`, never inside `customization/`.
 
 ---
 
 ## Versioned `api/`
 
-App-wide custom APIs (not scoped to one DocType) are versioned:
+App-wide custom APIs (not scoped to one DocType) are versioned, and live
+**exclusively** under `<module_name>/api/`:
 
 ```
-api/
-    v1/
-        bank.py
-        company.py
-    api_error_handler.py    ← applies across all versions
-    before_request.py       ← applies across all versions
-    response_formatter.py   ← standard response-shape helper
+<module_name>/
+    api/
+        v1/
+            bank.py
+            company.py
+        api_error_handler.py    ← applies across all versions
+        before_request.py       ← applies across all versions
+        response_formatter.py   ← standard response-shape helper
 ```
 
 - Each resource gets its own file under `v1/` (or the current version).
@@ -298,6 +308,8 @@ api/
   versions and must not be duplicated inside each version folder.
 - `response_formatter.py` is where the `api_response(...)` helper belongs.
 - When introducing `v2/`, keep `v1/` working — do not break existing clients.
+- No other folder in the app (`doctype/`, `customization/`, module root, or
+  app root) may contain an `api/` folder or an `api.py` file.
 
 ---
 
@@ -317,3 +329,14 @@ api/
 - **Don't skip `fixtures/` for environment-portable config data** (custom
   roles, custom fields, workflow states). Hand-managing these via the UI on
   each site causes drift between dev / staging / production.
+- **Don't create `api.py` files or `api/` folders inside `doctype/`,
+  `customization/`, or the app root.** All API code lives in exactly one
+  place: `<module_name>/api/`. This is a hard rule, not a preference —
+  it keeps the whitelisted surface area auditable from a single location.
+- **Don't use `@frappe.whitelist()` inside a controller or customization
+  file.** A method like `approve()` on an `Expense` controller stays plain
+  Python. If the client needs to call it, write a whitelisted wrapper under
+  `<module_name>/api/` that loads the document and calls the method
+  internally — see [api.md](./skills/frappe-app-dev/references/api.md).
+- **Don't name the module directory the same as the app.** `<module_name>`
+  must be a distinct, meaningful name — never a repeat of `<app_name>`.
