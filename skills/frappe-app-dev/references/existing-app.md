@@ -8,8 +8,9 @@ Use this flow when the user wants to extend, modify, or fix an app that already 
 - [ ] Step 2: Locate the app
 - [ ] Step 3: Confirm site and app installation
 - [ ] Step 4: Enable developer mode
-- [ ] Step 5: Build / modify features
-- [ ] Step 6: Migrate and verify
+- [ ] Step 5: Check mandatory project files
+- [ ] Step 6: Build / modify features
+- [ ] Step 7: Migrate and verify
 ```
 
 ## Step 1: Find and confirm bench root
@@ -20,7 +21,7 @@ The bench root is typically the parent of the workspace directory, or the worksp
 ls apps/ sites/ Procfile
 ```
 
-If the workspace is inside the app (e.g. user opened `apps/myapp/`), go up:
+If the workspace is inside the app (e.g. user opened `apps/<app_name>/`), go up:
 ```bash
 ls ../../apps/ ../../sites/ ../../Procfile
 ```
@@ -43,6 +44,11 @@ ls apps/<app-name>/<app-name>/<module-name>/
 
 Do NOT create a second app. Do NOT run `bench new-app`.
 
+If the module directory is still named the same as the app (an older app
+predating the `<module_name> != <app_name>` convention), do not silently
+rename it mid-task — that's a breaking change to every import path. Flag it
+to the user and treat renaming as its own separate, deliberate change.
+
 ## Step 3: Confirm site and app installation
 
 See [site-management.md](./site-management.md) for finding the right site for this app.
@@ -63,7 +69,24 @@ bench --site <site> install-app <app-name>
 bench set-config -g developer_mode 1
 ```
 
-## Step 5: Build / modify features
+## Step 5: Check mandatory project files
+
+```bash
+ls apps/<app-name>/README.md apps/<app-name>/LICENSE.md apps/<app-name>/SETUP.md
+```
+
+- **Missing `LICENSE.md`** — add it now, verbatim, per
+  [licensing.md](./licensing.md), regardless of what this task is about.
+- **Missing `README.md`** — add a minimal one per [readme.md](./readme.md)
+  before proceeding; backfilling the full Key DocTypes/Features tables can
+  happen incrementally, but the file should exist.
+- **Missing `SETUP.md`** — only add it if the app has an existing
+  integration or Settings DocType with required fields; otherwise skip.
+- Don't let a missing file block the actual task — create a minimal
+  version and continue, rather than treating this as a blocker to raise
+  with the user first.
+
+## Step 6: Build / modify features
 
 Read the app's existing code to understand patterns before making changes. Load only the relevant feature references from the main SKILL.md table.
 
@@ -72,10 +95,17 @@ Key files to read first:
 - `apps/<app>/<app>/hooks.py` — existing hooks
 - `apps/<app>/<app>/<module>/` — existing DocTypes and modules
 
-## Step 6: Migrate and verify
+Every function/method/class you add or modify needs a docstring (see
+`code-style` SKILL.md), and every new/modified `.py`/`.js`/`.md` file needs
+the copyright header (see [licensing.md](./licensing.md)) if it doesn't
+already have one. If the change adds/removes a feature, integration, or
+user-facing DocType, update `README.md` (and `SETUP.md` for integrations)
+in the same change.
+
+## Step 7: Migrate and verify
 
 ```bash
 bench --site <site> migrate
 ```
 
-Same rules as new app — see [new-app.md](./new-app.md#step-7-migrate-and-verify) for migrate rules.
+Same rules as new app — see [new-app.md](./new-app.md#step-9-migrate-and-verify) for migrate rules.

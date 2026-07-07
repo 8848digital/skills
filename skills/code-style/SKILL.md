@@ -1,6 +1,6 @@
 ---
 name: code-style
-description: Code style rules for readable, maintainable implementation. Load this skill always when writing or editing code, and whenever the user asks about code style, refactoring shape, function/file size, object-oriented structure, helper ordering, or comments. For Frappe-specific work, prefer frappe-app-dev.
+description: Code style rules for readable, maintainable implementation. Load this skill always when writing or editing code, and whenever the user asks about code style, refactoring shape, function/file size, object-oriented structure, helper ordering, comments, or docstrings. For Frappe-specific work, prefer frappe-app-dev.
 ---
 
 # Code Style Rules
@@ -19,5 +19,65 @@ description: Code style rules for readable, maintainable implementation. Load th
 - Add blank lines between logical sections within a function body for readability.
 - Use descriptive names — avoid single-letter names like `i`, `j` outside tight loops; prefer `invoice_index`, `customer_count`, etc.
 - Strip unused variables/functions, and debug statements (`print`, `console.log`, `breakpoint`) before finishing a change.
+
+## Docstrings — mandatory on every function
+
+Every function, method, and class — not only whitelisted API endpoints — must
+have a docstring. This is a hard rule, not a style preference. Whitelisted
+endpoints follow the stricter, longer format defined in
+`frappe-app-dev/references/api.md`; every other function follows the format
+below.
+
+Minimum content:
+
+- 2–3 line explanation of what it does and, if non-obvious, why it exists.
+  Do not just restate the function signature in words.
+- Every parameter: name, type, required/optional.
+- Return value and its type (or `None`).
+
+No exceptions for "small" or "obvious" functions — a one-line helper still
+gets at least a one-line docstring stating what it returns.
+
+**Python:**
+
+````python
+def format_customer_display_name(customer_name: str, customer_code: str) -> str:
+    """
+    Build the display string shown in dropdowns and print formats.
+
+    Parameters:
+        customer_name (str, required): The customer's registered name.
+        customer_code (str, required): The internal customer code.
+
+    Returns:
+        str: "<customer_code> - <customer_name>"
+    """
+    return f"{customer_code} - {customer_name}"
+````
+
+**JavaScript:**
+
+````javascript
+/**
+ * Build the display string shown in dropdowns and print formats.
+ *
+ * @param {string} customerName - The customer's registered name.
+ * @param {string} customerCode - The internal customer code.
+ * @returns {string} "<customerCode> - <customerName>"
+ */
+function formatCustomerDisplayName(customerName, customerCode) {
+    return `${customerCode} - ${customerName}`;
+}
+````
+
+**Note on this skill repo's own reference docs:** code snippets inside
+`frappe-app-dev/references/*.md` are illustrative and may omit docstrings for
+readability of the reference material itself. This is a documentation
+convention only — it is never a license to skip docstrings in actual app
+code. When in doubt, the rule above governs; the reference docs' brevity does
+not.
+
+For file-level copyright/license headers (separate from function docstrings),
+see `frappe-app-dev/references/licensing.md`.
 
 For Frappe-specific work, prefer `frappe-app-dev`.

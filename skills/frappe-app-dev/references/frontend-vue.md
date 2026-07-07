@@ -41,10 +41,10 @@ export default defineConfig(async () => {
   return {
     plugins: [
       frappeui({
-        frontendRoute: '/myapp',       // route prefix for the SPA
+        frontendRoute: '/<app_name>',       // route prefix for the SPA
         frappeTypes: {                  // auto-generate TypeScript types for DocTypes
           input: {
-            myapp: ['my_doctype'],
+            <app_name>: ['my_doctype'],
           },
         },
       }),
@@ -65,7 +65,7 @@ Wire the SPA route in `hooks.py` so Frappe serves the Vue app:
 
 ```python
 website_route_rules = [
-    {"from_route": "/myapp/<path:app_path>", "to_route": "myapp"},
+    {"from_route": "/<app_name>/<path:app_path>", "to_route": "<app_name>"},
 ]
 ```
 
@@ -100,7 +100,7 @@ import { useCall, useList, useDoc } from 'frappe-ui'
 
 // API call
 const result = useCall({
-  url: '/api/v2/method/myapp.api.get_summary',
+  url: '/api/v2/method/<app_name>.api.get_summary',
   method: 'POST',
   immediate: false,        // set true to call on mount
   onSuccess: (data) => {

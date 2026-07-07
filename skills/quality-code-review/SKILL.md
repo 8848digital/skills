@@ -3,9 +3,10 @@ name: quality-code-review
 description: >-
   Review code for any Frappe application — a checklist distilled from years of
   engineering practice on correctness, security, performance, concurrency,
-  readability, API design, and testing. Use this when reviewing a diff, a PR, or
-  a piece of code for quality and security, or when you want a reviewer's
-  checklist grounded in hard-won Frappe/ERPNext lessons.
+  readability, API design, testing, and project hygiene (docstrings, licensing,
+  required docs). Use this when reviewing a diff, a PR, or a piece of code for
+  quality and security, or when you want a reviewer's checklist grounded in
+  hard-won Frappe/ERPNext lessons.
 ---
 
 # Quality Code Review
@@ -15,10 +16,42 @@ and the future maintainer**, in that order of consequence — lead with the
 highest-consequence checks. Prefer a root-cause fix over a workaround, and say
 *why* a finding matters (what breaks, for whom).
 
-Review order: **§1 Correctness** and **§2 Security** first (spend most attention
-here) → **§3 Performance**, **§4 Concurrency** (bugs invisible in a casual read)
-→ **§5 Readability**, **§6 API design**, **§7 Testing**, **§8 Errors &
-observability**.
+Review order: **§0 Project hygiene** (fast, binary checks) → **§1 Correctness**
+and **§2 Security** (spend most attention here) → **§3 Performance**, **§4
+Concurrency** (bugs invisible in a casual read) → **§5 Readability**, **§6 API
+design**, **§7 Testing**, **§8 Errors & observability**.
+
+---
+
+## 0. Project hygiene (fast, binary — check first)
+
+These are cheap to check and easy to miss in a logic-focused review. Flag every
+one found; none of them require deep reading.
+
+- **Docstring on every function/method/class touched by the diff** — not only
+  whitelisted API endpoints. A one-line helper still needs at least a one-line
+  docstring stating what it returns. See `code-style` SKILL.md for the required
+  format.
+- **Whitelisted-endpoint docstrings meet the fuller API format** (2–3 line
+  explanation, endpoint path, HTTP method, every parameter with type and
+  required/optional, response format) — see `frappe-app-dev/references/api.md`.
+- **Copyright header present** on every new/modified `.py`, `.js`, and `.md`
+  file — verbatim block from `frappe-app-dev/references/licensing.md`. `.json`
+  files are exempt.
+- **`LICENSE.md` exists at repo root**, verbatim template, for any repo this PR
+  touches structurally (e.g. first PR into a new app).
+- **`README.md` updated** if the PR adds/removes a feature, a DocType a user
+  needs to know about, or an integration — see
+  `frappe-app-dev/references/readme.md`. A feature PR that doesn't touch
+  `README.md` is usually a missed update, not a non-issue.
+- **`SETUP.md` updated** if the PR adds/changes a required credential,
+  Settings-DocType field, webhook, or environment variable — see
+  `frappe-app-dev/references/setup.md`. Never let a merged integration leave
+  `SETUP.md` silently stale.
+- **Structural conventions held**: `<module_name> != <app_name>`, no `api.py`/
+  `api/` outside `<module_name>/api/`, no `@frappe.whitelist()` outside
+  `<module_name>/api/`, `customization/` (never `custom/`) used only for
+  DocTypes owned elsewhere — see `CLAUDE.md`.
 
 ---
 
@@ -112,7 +145,8 @@ especially hard.
   and first use; **validate using the URL alone, not merged form data** (Frappe
   merges URL + form data → replay attacks with one valid signature).
 - Store secrets in password fields; never plain text; never leak secrets in logs
-  or error messages.
+  or error messages. Never let a secret value appear in `SETUP.md` — only the
+  credential's *name* and where it's configured.
 
 **XSS & the rest of OWASP**
 - Don't inject user input into the DOM. Treat XSS as critical even when it looks
@@ -197,12 +231,14 @@ perceive ~100ms).
 - **Prefer extending shared components over copy-paste divergence.** 3–4 forked
   implementations of one thing → slow long-term velocity. Avoid tight coupling
   across modules; integrate through clear, documented public APIs.
-- Document **public** modules/classes/functions with docstrings; **prefer type
-  annotations over describing types in prose** ("type hints are 10x better");
-  type checkers find non-obvious bugs.
+- **Every function, method, and class gets a docstring** — this is a hard
+  requirement, not just public-API courtesy (see §0). Prefer type annotations
+  over describing types in prose ("type hints are 10x better"); type checkers
+  find non-obvious bugs.
 - Docstrings should only mention important things. Keep them short and to the
   point. Don't explain what's trivially understood from function name. Focus on
-  "why".
+  "why" for the prose portion, but still list parameters/return value per the
+  mandatory format.
 - **Guard clauses over nesting.** Prefer early-return guards to over-indented
   if-else soup; merge nested `if`s.
 - **Delete dead code.** Commented-out code never gets merged — git history
@@ -244,6 +280,10 @@ perceive ~100ms).
 - **A modified existing test is a red flag.** If making a change pass required
   editing an existing test's assertions, you've likely broken a real workflow —
   justify it explicitly rather than bending the test.
+- **Whitelisted endpoints, and only whitelisted endpoints, live under
+  `<module_name>/api/`.** A whitelisted method appearing on a `doctype/` or
+  `customization/` file is a structural defect, not a style nit — flag it as
+  such (see `frappe-app-dev/references/api.md`).
 
 ## 7. Testing
 

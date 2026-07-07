@@ -4,8 +4,10 @@ Always use bare `bench`. Not `./env/bin/bench`.
 
 ## App & site lifecycle
 
-```bash
+````bash
 # New app (MUST pipe input — no heredoc, no --no-input)
+# Use "Proprietary" as <license> for 8848 Digital apps — see licensing.md;
+# do not leave this as an OSS identifier (mit, apache-2.0, etc.)
 printf '<title>\n<desc>\n<publisher>\n<email>\n<license>\nN\nN\nN\n' | bench new-app <app-name>
 
 # New site (set root_password in common_site_config first: bench set-config -g root_password '<pwd>')
@@ -23,11 +25,11 @@ bench --site <site> migrate
 
 # Set default site
 bench use <site>
-```
+````
 
 ## Development
 
-```bash
+````bash
 # Start dev server (run in BACKGROUND)
 bench start
 
@@ -52,11 +54,11 @@ bench build --app <app-name>
 
 # Watch mode for frontend
 bench watch
-```
+````
 
 ## Site maintenance
 
-```bash
+````bash
 # Backup
 bench --site <site> backup
 
@@ -78,11 +80,11 @@ bench --site <site> mariadb
 
 # Drop site (DESTRUCTIVE)
 bench drop-site <site> --db-root-password '<pwd>'
-```
+````
 
 ## Fixtures
 
-```bash
+````bash
 # Export fixtures defined in hooks.py
 bench --site <site> export-fixtures --app <app-name>
-```
+````

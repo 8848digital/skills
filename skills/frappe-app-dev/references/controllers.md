@@ -4,13 +4,13 @@ Controllers add server-side logic to DocTypes via Python classes.
 
 ## File location
 
-```
+````
 apps/<app>/<app>/<module>/doctype/<doctype_name>/<doctype_name>.py
-```
+````
 
 ## Basic controller
 
-```python
+````python
 import frappe
 from frappe.model.document import Document
 
@@ -21,13 +21,13 @@ class Expense(Document):
 
     def before_save(self):
         self.total = sum(item.amount for item in self.items)
-```
+````
 
 The class name is the DocType name with spaces removed (e.g. "Expense Category" → `ExpenseCategory`).
 
-> This example inlines a trivial one-liner for brevity. For anything beyond a
-> single simple expression, follow the file structure rules below — hooks
-> should call out to a function, not contain the logic themselves.
+> For anything beyond a single simple expression, follow the file structure
+> rules below — hooks should call out to a function, not contain the logic
+> themselves.
 
 ## Document lifecycle hooks
 
@@ -81,11 +81,11 @@ Called in this order:
 logic. Each hook should call out to a function rather than implement the
 behavior inline.
 
-```python
+````python
 # operation_card.py — hooks only, delegate to helpers
 import frappe
 from frappe.model.document import Document
-from myapp.myapp.doctype.operation_card.operation_card_utils import (
+from <app_name>.<module_name>.doctype.operation_card.operation_card_utils import (
     validate_operation,
     apply_status,
 )
@@ -96,7 +96,7 @@ class OperationCard(Document):
 
     def on_submit(self):
         apply_status(self, "Submitted")
-```
+````
 
 - Place the actual implementation in sibling files within the same doctype
   directory (e.g. `operation_card_utils.py`, `operation_card_service.py`) —
@@ -110,7 +110,8 @@ class OperationCard(Document):
   - Exception: doctypes you don't own (core Frappe/ERPNext, or another app's
     doctype) — don't add files into their directory. Put that logic in your
     own app instead, in a module named for what it does (e.g.
-    `myapp/integrations/sales_order_sync.py`), and call it from your hook.
+    `<module_name>/integrations/sales_order_sync.py`), and call it from your
+    hook.
 - Name files and variables after what they represent, not how they're used —
   e.g. `operation_card_utils.py` not `helpers.py` or `misc.py`;
   `apply_status` not `do_thing`.
@@ -118,59 +119,59 @@ class OperationCard(Document):
 ## Common patterns
 
 ### Set defaults before validation
-```python
+````python
 def before_validate(self):
     if not self.currency:
         self.currency = frappe.defaults.get_global_default("currency")
-```
+````
 
 ### Throw validation errors
-```python
+````python
 frappe.throw("Error message")                    # general error
 frappe.throw("Message", frappe.ValidationError)  # with exception type
-```
+````
 
 ### Access current user
-```python
+````python
 frappe.session.user  # email of logged-in user
-```
+````
 
 ### Set field values
-```python
+````python
 def before_save(self):
     self.full_name = f"{self.first_name} {self.last_name}"
-```
+````
 
 ### Interact with other DocTypes
-```python
+````python
 def on_submit(self):
     frappe.get_doc(
         doctype="Notification Log",
         subject=f"Expense {self.name} approved"
     ).insert(ignore_permissions=True)
-```
+````
 
 ### Access flags
-```python
+````python
 # Set a flag to skip validation in specific cases
 doc.flags.ignore_validate = True
 doc.save()
-```
+````
 
 ## Anti-patterns
 
 - **Don't use `frappe.db.set_value` for fields with validation logic.** It bypasses `validate()`, `before_save()`, and all lifecycle hooks. Never use it for status fields or state transitions. Use it only for simple counters, timestamps, or cached values.
-```python
+````python
   # BAD — skips controller validation
   frappe.db.set_value("Expense", name, "status", "Approved")
   # GOOD
   doc = frappe.get_doc("Expense", name)
   doc.status = "Approved"
   doc.save()
-```
+````
 - **Don't call `frappe.db.commit()` in controller methods or request handlers.** See the Transactions section in [database](./database.md) reference.
 - **Don't write business logic directly in `<doctype_name>.py` hooks.** Hook methods should call a function, not implement the behavior — see File structure above.
-```python
+````python
   # BAD — logic inline in the hook
   def validate(self):
       if self.amount > 10000 and not self.approver:
@@ -181,17 +182,52 @@ doc.save()
   def validate(self):
       validate_approval_requirement(self)
       self.tax = calculate_tax(self.amount)
-```
-- **Put permission checks inside controller methods**, not in API wrapper helpers. This ensures enforcement regardless of call path (API, desk, background job).
-```python
-  # BAD — check in api.py wrapper
+````
+- **Put permission checks inside controller methods**, not in API wrapper helpers. This ensures enforcement regardless of call path (API, desk, background job). The controller method itself stays plain (non-whitelisted); the client-facing entry point is a separate thin wrapper under `<module_name>/api/`.
+````python
+  # BAD — check in api.py wrapper only; controller method has no enforcement
+  # of its own, so anything calling the controller method directly (desk,
+  # background job, another controller) skips the check entirely
   def _get_manager_doc(name):
       if "Expense Manager" not in frappe.get_roles(): ...
-  # GOOD — check in the controller method itself
+
+  # GOOD — check lives in the controller method itself (plain, not whitelisted)
   class Expense(Document):
-      @frappe.whitelist()
       def approve(self):
           if "Expense Manager" not in frappe.get_roles():
               frappe.throw("Not allowed", frappe.PermissionError)
+          self.status = "Approved"
+          self.save()
+````
+````python
+  # apps/<app>/<app>/<module>/api/v1/expense.py — thin wrapper, this is
+  # what's actually @frappe.whitelist()-decorated and reachable from the client
+  import frappe
+  from <app_name>.<module_name>.doctype.expense.expense import Expense
+
+  @frappe.whitelist(methods=["POST"])
+  def approve_expense(expense_id: str):
+      """
+      Approve an expense, enforcing the Expense Manager role check defined
+      on the controller.
+
+      **Endpoint:** `/api/method/<app_name>.<module_name>.api.v1.expense.approve_expense`
+      **HTTP Method:** POST
+      **Parameters:**
+          - expense_id (str, required): The name of the Expense document
+      **Response:**
+```json
+          {
+              "status": true,
+              "status_code": 200,
+              "message": "Expense approved",
+              "data": { "status": "Approved" },
+              "errors": null
+          }
 ```
+      """
+      doc = frappe.get_doc("Expense", expense_id)
+      doc.approve()
+      return {"status": doc.status}
+````
 - **Be consistent with permission checks across all controller methods.** If some methods on a DocType check for a role explicitly, all mutating methods should do the same — don't rely on implicit DocType perms for some and explicit checks for others.

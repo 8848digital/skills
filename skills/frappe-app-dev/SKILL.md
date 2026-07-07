@@ -23,6 +23,11 @@ description: >-
 - Run `bench start` in a background process only.
 - Before running `bench start`, check if it's already running in an existing terminal. Do not start a second instance.
 - Always pass `--site <site>` explicitly to bench commands. Never run bare `bench migrate`.
+- Every function/method/class written in this app needs a docstring (see `code-style` SKILL.md), and every `.py`/`.js`/`.md` file needs the copyright header (see [licensing.md](./references/licensing.md)) — these apply regardless of which feature reference below is in play.
+- Before ending any task that created or modified files, run through
+  `quality-code-review`'s §0 Project hygiene checklist (docstrings, copyright
+  headers, README/SETUP updates, structural conventions) — a lightweight
+  self-check, not the full review.
 
 ## Flow Selection
 
@@ -55,5 +60,8 @@ Load ONLY the references needed for the current task:
 | Testing          | Writing & running tests                      | [testing.md](./references/testing.md)                   |
 | Frontend & UI    | Desk UI, Vue SPA, portal pages           | [frontend.md](./references/frontend.md) (router → 3 sub-files) |
 | Bench CLI        | All bench commands reference                 | [bench-operations.md](./references/bench-operations.md) |
+| README.md        | Writing/updating the app's functional README | [readme.md](./references/readme.md)                     |
+| SETUP.md         | Documenting integration/config requirements  | [setup.md](./references/setup.md)                       |
+| Licensing & file headers | Adding LICENSE.md, per-file copyright headers | [licensing.md](./references/licensing.md)         |
 
 ## Important: Do NOT load all references at once. Read only what the current task requires.

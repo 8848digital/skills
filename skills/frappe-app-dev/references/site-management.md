@@ -65,7 +65,7 @@ bench --site <site> console
 
 # Run arbitrary Python non-interactively
 bench --site <site> execute frappe.utils.get_url
-bench --site <site> execute myapp.api.some_function --kwargs '{"arg1": "value"}'
+bench --site <site> execute <app_name>.api.some_function --kwargs '{"arg1": "value"}'
 ```
 
 ## Site config

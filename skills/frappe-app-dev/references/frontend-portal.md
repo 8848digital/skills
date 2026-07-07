@@ -37,6 +37,6 @@ website_route_rules = [
 ]
 
 has_website_permission = {
-    "Expense": "myapp.permissions.has_website_permission"
+    "Expense": "<app_name>.permissions.has_website_permission"
 }
 ```

@@ -8,9 +8,11 @@ Follow these steps in order. Do not skip steps.
 - [ ] Step 2: Enable developer mode
 - [ ] Step 3: Pick or create site
 - [ ] Step 4: Create app
-- [ ] Step 5: Install app on site
-- [ ] Step 6: Build features
-- [ ] Step 7: Migrate and verify
+- [ ] Step 5: Restructure module directory to convention
+- [ ] Step 6: Add mandatory project files
+- [ ] Step 7: Install app on site
+- [ ] Step 8: Build features
+- [ ] Step 9: Migrate and verify
 ```
 
 ## Step 1: Confirm bench root
@@ -44,39 +46,96 @@ printf '<title>\n<description>\n<publisher>\n<email>\n<license>\nN\nN\nN\n' | be
 
 Example:
 ```bash
-printf 'Expense Tracker\nTrack expenses\nJohn\njohn@example.com\nmit\nN\nN\nN\n' | bench new-app expense_tracker
-```
+printf 'Expense Tracker\nTrack expenses\nJohn\njohn@example.com\nProprietary\nN\nN\nN\n' | bench new-app expense_tracker```
 
 Verify:
 ```bash
 ls apps/<app-name>
 ```
 
-## Step 5: Install app on site
+`bench new-app` scaffolds a module directory with the **same name as the
+app** by default:
 
-```bash
-bench --site <site> install-app <app-name>
-bench --site <site> list-apps  # verify
 ```
-
-## Step 6: Build features
-
-Write DocTypes, controllers, hooks, permissions, UI directly in the app module directory created in step 4.
-
-The app structure after `bench new-app myapp`:
-```
-apps/myapp/
-  myapp/
-    myapp/          ← module directory (same name as app)
+apps/<app_name>/
+  <app_name>/
+    <app_name>/          ← scaffolded module dir — SAME name as app (not yet compliant)
       __init__.py
     hooks.py
     __init__.py
   setup.py
 ```
 
-Load the relevant feature references from the main SKILL.md table as needed.
+This is a **starting point only** — proceed to Step 5 before writing any
+feature code. Never leave the module directory named the same as the app;
+see `CLAUDE.md`'s `<module_name>` naming rule.
 
-## Step 7: Migrate and verify
+## Step 5: Restructure module directory to convention
+
+1. Ask the user for the intended `<module_name>` (must differ from
+   `<app_name>` — e.g. app `chances_erp`, module `chances_core`).
+2. Rename the scaffolded module directory:
+```bash
+   git -C apps/<app-name> mv <app-name>/<app-name> <app-name>/<module-name>
+```
+3. Update every reference to the old dotted path
+   (`<app_name>.<app_name>.*` → `<app_name>.<module_name>.*`) in `hooks.py`,
+   `modules.txt`, and any generated boilerplate.
+4. Create the standard subdirectories under `<module_name>/` per `CLAUDE.md`'s
+   tree — at minimum `api/v1/`, `doctype/`, `customization/` — as the task
+   needs them. Don't pre-create folders the app has no use for yet.
+5. Re-run `bench --site <site> migrate` once after the rename to confirm
+   nothing references the old module path.
+
+## Step 6: Add mandatory project files
+
+Every new app ships these at the repo root (`apps/<app-name>/`) before any
+feature work is considered done:
+
+- **`README.md`** — functional overview, per
+  [readme.md](./readme.md). Fill in Overview/Key DocTypes/Features as they're
+  built in Step 8, but create the file with at least the Overview and
+  Installation sections now.
+- **`LICENSE.md`** — verbatim template, per
+  [licensing.md](./licensing.md). Non-negotiable, no exceptions.
+- **`SETUP.md`** — only if the app will have an external integration or a
+  Settings DocType with required fields (ask the user if unsure). Create it
+  once the first integration is added in Step 8, per
+  [setup.md](./setup.md); skip entirely otherwise.
+- Add the copyright header (per [licensing.md](./licensing.md)) to every
+  `.py`/`.js`/`.md` file created from this point on, including files
+  generated in this workflow.
+- **Align packaging metadata with `LICENSE.md`.** `bench new-app`'s scaffold
+  prompt asks for a license identifier (e.g. `mit`) and writes it into
+  `pyproject.toml`. For 8848 Digital apps this must be `Proprietary`, not an
+  open-source identifier — open the generated `pyproject.toml` after
+  scaffolding and correct the `license` field (and `classifiers`, if present)
+  to match `LICENSE.md`. Never leave an OSS license identifier (MIT, Apache-2.0,
+  etc.) sitting alongside a proprietary `LICENSE.md`.
+
+## Step 7: Install app on site
+
+```bash
+bench --site <site> install-app <app-name>
+bench --site <site> list-apps  # verify
+```
+
+## Step 8: Build features
+
+Write DocTypes, controllers, hooks, permissions, UI directly under
+`<module_name>/` (created in Step 5) — never back in a directory named after
+the app itself.
+
+Every function/method/class written here needs a docstring (see
+`code-style` SKILL.md); every whitelisted endpoint additionally needs the
+full API docstring format (see [api.md](./api.md)).
+
+Load the relevant feature references from the main SKILL.md table as needed.
+As features land, update `README.md`'s Key DocTypes/Features sections and,
+if an integration was added, `SETUP.md`'s credential table — in the same
+change, not as a follow-up.
+
+## Step 9: Migrate and verify
 
 ```bash
 bench --site <site> migrate

@@ -102,12 +102,12 @@ To restrict which records appear in list views and `get_list` calls, define `per
 ```python
 # hooks.py
 permission_query_conditions = {
-    "Expense": "myapp.permissions.expense_query_conditions",
+    "Expense": "<app_name>.permissions.expense_query_conditions",
 }
 ```
 
 ```python
-# myapp/permissions.py
+# <app_name>/permissions.py
 import frappe
 
 def expense_query_conditions(user=None):

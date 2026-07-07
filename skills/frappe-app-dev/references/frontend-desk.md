@@ -65,7 +65,7 @@ frm.call("get_summary").then(r => console.log(r.message));
 
 // Call whitelisted API
 frappe.call({
-    method: "myapp.api.get_expenses",
+    method: "<app_name>.api.get_expenses",
     args: { status: "Draft" },
     callback(r) { console.log(r.message); }
 });
