@@ -4,9 +4,9 @@
 
 All whitelisted, REST-style endpoint code lives in **exactly one place**:
 
-```
+````
 apps/<app_name>/<app_name>/<module_name>/api/
-```
+````
 
 - `<module_name>` must not be the same name as `<app_name>`.
 - No `api.py` file or `api/` folder may exist inside `doctype/`,
@@ -20,6 +20,11 @@ apps/<app_name>/<app_name>/<module_name>/api/
   be reachable from the client, write a whitelisted function under
   `<module_name>/api/` that loads the document and calls the controller
   method internally.
+- **Non-whitelisted support helpers used by the API layer** — centralised
+  error handling, pre-request guards, response formatting — are *not*
+  endpoint code, so they don't live in `api/` either. They live in
+  `apps/<app_name>/<app_name>/utils/api_handlers/` at the app root, shared
+  by every module's `api/vN/` files. See the Helper section below.
 - Dotted import/method paths throughout this file use the placeholder
   `<app_name>.<module_name>` — substitute your actual app and module names.
 
@@ -33,7 +38,7 @@ Every `@frappe.whitelist()` function — all of which live under
 - Every parameter, with its type and whether it's required/optional.
 - The response format.
 
-```python
+````python
 # apps/<app_name>/<app_name>/<module_name>/api/v1/bank.py
 
 @frappe.whitelist(methods=["POST"])
@@ -62,7 +67,7 @@ def update_player_bank_account(
         - first_name (str, required): The first name
         - last_name (str, required): The last name
     **Response:**
-        ```json
+```json
         {
             "status": true,
             "status_code": 200,
@@ -70,10 +75,10 @@ def update_player_bank_account(
             "data": { "player_id": "PLYR-0001" },
             "errors": null
         }
-        ```
+```
     """
     ...
-```
+````
 
 ## Controller methods are never whitelisted
 
@@ -82,7 +87,7 @@ DocType controllers (`doctype/<name>/<name>.py`) and customization files
 only — `before_save`, `on_submit`, `validate`, ordinary helper methods, etc.
 None of these are decorated with `@frappe.whitelist()`.
 
-```python
+````python
 # apps/<app_name>/<app_name>/<module_name>/doctype/expense/expense.py
 
 import frappe
@@ -90,18 +95,27 @@ from frappe.model.document import Document
 
 class Expense(Document):
     def approve(self):
-        # Plain method — NOT whitelisted, NOT directly callable from the client.
+        """
+        Mark this expense as approved. Plain controller method — not
+        whitelisted, not directly callable from the client.
+
+        Parameters:
+            None (operates on self).
+
+        Returns:
+            str: The updated status ("Approved").
+        """
         self.status = "Approved"
         self.save()
         return self.status
-```
+````
 
 The business logic that fetches the document and invokes the controller
 method also stays out of `api/` — it belongs in a business-logic module
 (e.g. alongside the controller, or in `customization/`'s `utils.py`
 equivalent):
 
-```python
+````python
 # apps/<app_name>/<app_name>/<module_name>/doctype/expense/expense_utils.py
 
 import frappe
@@ -110,22 +124,29 @@ def approve_expense(expense_id: str) -> str:
     """
     Load an Expense document and approve it. Plain business-logic function —
     not whitelisted; called by the api/ wrapper below.
+
+    Parameters:
+        expense_id (str, required): The name of the Expense document.
+
+    Returns:
+        str: The document's status after approval.
     """
     doc = frappe.get_doc("Expense", expense_id)
     doc.approve()
     return doc.status
-```
+````
 
 The whitelisted function under `<module_name>/api/` is a **thin wrapper
 only** — it validates input, calls the business-logic function, and formats
 the response. It must never contain business logic itself (no
 `frappe.get_doc`, no mutating fields, no calling `doc.save()` directly):
 
-```python
+````python
 # apps/<app_name>/<app_name>/<module_name>/api/v1/expense.py
 
 import frappe
 from <app_name>.<module_name>.doctype.expense.expense_utils import approve_expense
+from <app_name>.utils.api_handlers.response_formatter import api_response
 
 @frappe.whitelist(methods=["POST"])
 def approve_expense_endpoint(expense_id: str):
@@ -137,7 +158,7 @@ def approve_expense_endpoint(expense_id: str):
     **Parameters:**
         - expense_id (str, required): The name of the Expense document
     **Response:**
-        ```json
+```json
         {
             "status": true,
             "status_code": 200,
@@ -145,20 +166,20 @@ def approve_expense_endpoint(expense_id: str):
             "data": { "status": "Approved" },
             "errors": null
         }
-        ```
+```
     """
     status = approve_expense(expense_id)
-    return {"status": status}
-```
+    return api_response(message="Expense approved", data={"status": status})
+````
 
 Call from client JS:
-```javascript
+````javascript
 frappe.call({
     method: "<app_name>.<module_name>.api.v1.expense.approve_expense_endpoint",
     args: { expense_id: frm.doc.name },
     callback(r) { console.log(r.message); }
 });
-```
+````
 
 This keeps every whitelisted entry point auditable from a single folder —
 you never have to check `doctype/` or `customization/` files to find out
@@ -171,22 +192,28 @@ Every whitelisted function — whether it wraps a single document, aggregates
 across documents, or has no document context at all — lives under
 `<module_name>/api/`.
 
-```python
-# apps/<app_name>/<app_name>/<module_name>/utils.py
+````python
+# apps/<app_name>/<app_name>/<module_name>/dashboard.py — plain business logic, not whitelisted
 import frappe
 
 def get_dashboard_counts() -> dict:
     """
-    Plain business-logic function — not whitelisted, and lives outside
-    `api/` entirely. Computes aggregate counts used by the dashboard.
+    Compute aggregate counts used by the dashboard. Plain business-logic
+    function — not whitelisted, and lives outside `api/` entirely.
+
+    Parameters:
+        None.
+
+    Returns:
+        dict: {"total": <int>}
     """
     return {"total": frappe.db.count("Expense")}
-```
+````
 
-```python
+````python
 # apps/<app_name>/<app_name>/<module_name>/api/v1/dashboard.py
 import frappe
-from <app_name>.<module_name>.utils import get_dashboard_counts
+from <app_name>.<module_name>.dashboard import get_dashboard_counts
 
 @frappe.whitelist(methods=["GET"])
 def get_dashboard_data():
@@ -197,7 +224,7 @@ def get_dashboard_data():
     **HTTP Method:** GET
     **Parameters:** None
     **Response:**
-        ```json
+```json
         {
             "status": true,
             "status_code": 200,
@@ -205,22 +232,25 @@ def get_dashboard_data():
             "data": { "total": 42 },
             "errors": null
         }
-        ```
+```
     """
     return get_dashboard_counts()
-```
+````
 
 For larger apps, organize by feature:
-```
+````
 apps/<app_name>/<app_name>/<module_name>/api/
     __init__.py
     v1/
         expenses.py
         reports.py
-    api_error_handler.py
-    before_request.py
-    response_formatter.py
-```
+apps/<app_name>/<app_name>/utils/
+    api_handlers/
+        __init__.py
+        api_error_handler.py
+        before_request.py
+        response_formatter.py
+````
 
 There is no doctype-scoped or customization-scoped `api.py` variant, and no
 whitelisted method lives on a controller class. If an endpoint is logically
@@ -231,7 +261,7 @@ whatever controller/business-logic module it needs and calls its
 
 ## Allow guest access
 
-```python
+````python
 # apps/<app_name>/<app_name>/<module_name>/api/v1/misc.py
 
 @frappe.whitelist(allow_guest=True)
@@ -243,7 +273,7 @@ def public_endpoint():
     **HTTP Method:** GET
     **Parameters:** None
     **Response:**
-        ```json
+```json
         {
             "status": true,
             "status_code": 200,
@@ -251,25 +281,33 @@ def public_endpoint():
             "data": { "message": "Hello" },
             "errors": null
         }
-        ```
+```
     """
     return {"message": "Hello"}
-```
+````
 
 Without `allow_guest=True`, the endpoint requires authentication.
 
 ## Argument handling
 
 - **Always add type hints** to whitelisted method parameters. Frappe validates and casts arguments based on type hints, preventing type-confusion attacks:
-```python
+````python
 # apps/<app_name>/<app_name>/<module_name>/doctype/expense/expense_utils.py
 
 import frappe
 
 def create_new_expense(title: str, amount: float, tags: list | None = None) -> str:
     """
-    Plain business-logic function — not whitelisted. Creates and inserts
-    a new Expense document, returning its name.
+    Create and insert a new Expense document. Plain business-logic
+    function — not whitelisted.
+
+    Parameters:
+        title (str, required): Expense title.
+        amount (float, required): Expense amount.
+        tags (list, optional): Optional list of tags.
+
+    Returns:
+        str: The name of the newly-created Expense document.
     """
     doc = frappe.get_doc({
         "doctype": "Expense",
@@ -279,9 +317,9 @@ def create_new_expense(title: str, amount: float, tags: list | None = None) -> s
     })
     doc.insert()
     return doc.name
-```
+````
 
-```python
+````python
 # apps/<app_name>/<app_name>/<module_name>/api/v1/expenses.py
 
 import frappe
@@ -299,7 +337,7 @@ def create_expense(title: str, amount: float, tags: list | None = None):
         - amount (float, required): Expense amount
         - tags (list, optional): Optional list of tags
     **Response:**
-        ```json
+```json
         {
             "status": true,
             "status_code": 201,
@@ -307,26 +345,26 @@ def create_expense(title: str, amount: float, tags: list | None = None):
             "data": { "name": "EXP-0002" },
             "errors": null
         }
-        ```
+```
     """
     # title is guaranteed to be str, amount is cast to float
     # Without type hints, all args arrive as untrusted strings
     name = create_new_expense(title, amount, tags)
     return {"name": name}
-```
+````
 
 - Use `frappe.form_dict` for raw request data:
-```python
+````python
 data = frappe.form_dict
-```
+````
 
 ## Return values
 
 - Return a dict/list → auto-serialized to JSON under `{"message": <return_value>}`
 - For custom HTTP responses:
-```python
+````python
 frappe.response["meta"] = meta
-```
+````
 
 ## API response standard
 
@@ -334,7 +372,7 @@ Every custom-built API (under `<module_name>/api/`) must return a consistent res
 
 ### Standard shape
 
-```json
+````json
 {
     "status": true,
     "status_code": 200,
@@ -342,7 +380,7 @@ Every custom-built API (under `<module_name>/api/`) must return a consistent res
     "data": {},
     "errors": null
 }
-```
+````
 
 - `status` (bool, required) — success or failure
 - `status_code` (int, required) — HTTP status code, must match the actual response status
@@ -353,7 +391,7 @@ Every custom-built API (under `<module_name>/api/`) must return a consistent res
 ### Examples
 
 Success:
-```json
+````json
 {
     "status": true,
     "status_code": 200,
@@ -361,10 +399,10 @@ Success:
     "data": { "customer": "CUST-0001", "customer_name": "ABC Pvt Ltd" },
     "errors": null
 }
-```
+````
 
 Validation error:
-```json
+````json
 {
     "status": false,
     "status_code": 400,
@@ -372,7 +410,7 @@ Validation error:
     "data": null,
     "errors": { "customer": "Customer is mandatory" }
 }
-```
+````
 
 ### Status codes
 
@@ -399,26 +437,29 @@ Validation error:
 - Keep `message` human-readable — it may be shown directly in a UI.
 - The HTTP status actually returned must match `status_code` in the body.
 
-### Helper
+### Helper — lives in `utils/api_handlers/`, not in `api/`
 
-Define once per app and reuse everywhere a whitelisted endpoint returns:
+This is a cross-cutting helper shared by every module's `api/vN/` files —
+define it once per app, at the app root, and import it wherever a
+whitelisted endpoint returns:
 
-```python
-# apps/<app_name>/<app_name>/<module_name>/api/response_formatter.py
+````python
+# apps/<app_name>/<app_name>/utils/api_handlers/response_formatter.py
 
-def api_response(status=True, code=200, message="", data=None, errors=None):
+def api_response(status: bool = True, code: int = 200, message: str = "", data=None, errors=None) -> dict:
     """
     Build the standard API response envelope used across all whitelisted
-    endpoints in this app.
+    endpoints in this app, regardless of which module they belong to.
 
-    **Parameters:**
-        - status (bool, optional): Success/failure flag. Default True.
-        - code (int, optional): HTTP status code. Default 200.
-        - message (str, optional): Human-readable message.
-        - data (object/array/None, optional): Payload on success.
-        - errors (object/array/None, optional): Error detail on failure.
-    **Response:**
-        Returns a dict matching the standard response shape:
+    Parameters:
+        status (bool, optional): Success/failure flag. Default True.
+        code (int, optional): HTTP status code. Default 200.
+        message (str, optional): Human-readable message.
+        data (object/array/None, optional): Payload on success.
+        errors (object/array/None, optional): Error detail on failure.
+
+    Returns:
+        dict: A dict matching the standard response shape:
         `{"status", "status_code", "message", "data", "errors"}`
     """
     return {
@@ -428,13 +469,26 @@ def api_response(status=True, code=200, message="", data=None, errors=None):
         "data": data,
         "errors": errors,
     }
-```
+````
+
+Import it into any module's endpoint file the same way, regardless of which
+`<module_name>` the endpoint lives under:
+
+````python
+# apps/<app_name>/<app_name>/<module_name>/api/v1/expense.py
+from <app_name>.utils.api_handlers.response_formatter import api_response
+````
+
+`api_error_handler.py` and `before_request.py` in the same
+`utils/api_handlers/` folder follow the same pattern — one shared
+implementation, imported by every module's `api/vN/` files, never
+duplicated per module and never placed inside `api/` itself.
 
 ## Frontend API structure (versioned APIs)
 
 For apps serving a dedicated frontend (e.g. React), version the API surface separately from internal doctype APIs, so frontend contracts can evolve independently of internal logic. This still lives under `<module_name>/api/` — never at the app root.
 
-```
+````
 apps/<app_name>/<app_name>/<module_name>/api/
     v1.py           # main v1 controller — routes/re-exports v1 endpoints
     v1/
@@ -442,7 +496,7 @@ apps/<app_name>/<app_name>/<module_name>/api/
         cart.py
         item_list.py
         sales_order.py
-```
+````
 
 - Version from the start (`v1/`, `v2/`, ...) even if only one version exists — retrofitting versioning later breaks existing frontend clients.
 - Keep the top-level version file (e.g. `v1.py`) as the entry controller; it stays thin and routes to resource files under `v1/`.
@@ -454,7 +508,7 @@ apps/<app_name>/<app_name>/<module_name>/api/
 
 Frappe provides CRUD APIs automatically via `/api/v2/document/` — no need to write them. Requires **Frappe v15+**.
 
-```
+````
 GET    /api/v2/document/<DocType>                          # list (with filters, fields, order_by, limit)
 POST   /api/v2/document/<DocType>                          # create
 GET    /api/v2/document/<DocType>/<name>/                  # read
@@ -464,7 +518,7 @@ GET    /api/v2/document/<DocType>/<name>/copy              # copy doc
 POST   /api/v2/method/<DocType>/<method>                   # call doctype level method (built-in Frappe methods only)
 GET    /api/v2/doctype/<DocType>/meta                      # get DocType meta
 GET    /api/v2/doctype/<DocType>/count                     # count records
-```
+````
 
 Note: `POST /api/v2/document/<DocType>/<name>/method/<method>/` (calling a
 custom whitelisted method directly on a document) does **not** apply in
@@ -478,10 +532,10 @@ above.
 Response includes `has_next_page` boolean for pagination.
 
 ### Bulk operations
-```
+````
 POST /api/v2/document/<DocType>/bulk_delete   # body: {"names": [...]}
 POST /api/v2/document/<DocType>/bulk_update   # body: {"docs": [{"name": "...", ...fields}]}
-```
+````
 
 Large bulk operations (>20 items by default) are automatically enqueued as background jobs.
 
@@ -491,7 +545,7 @@ Only create custom `@frappe.whitelist()` endpoints (under `<module_name>/api/`) 
 
 Always declare allowed HTTP methods explicitly. Frappe auto-commits only for POST/PUT — GET requests do not commit.
 
-```python
+````python
 @frappe.whitelist(methods=["GET"])
 def get_dashboard_data(): ...
 
@@ -500,13 +554,14 @@ def submit_entry(name: str): ...
 
 @frappe.whitelist(methods=["GET", "POST"])
 def get_or_create_token(): ...
-```
+````
 
 (Each of the above still requires the full mandatory docstring — omitted here only for brevity, and each lives under `<module_name>/api/`.)
 
 ## Anti-patterns
 
-- **Don't create `api.py` files or `api/` folders inside `doctype/`, `customization/`, or the app root.** All API code lives in exactly one place: `<module_name>/api/`.
+- **Don't create `api.py` files or `api/` folders inside `doctype/`, `customization/`, or the app root.** All whitelisted endpoint code lives in exactly one place: `<module_name>/api/`.
+- **Don't put `api_error_handler.py`/`before_request.py`/`response_formatter.py` inside `<module_name>/api/`.** They're non-whitelisted, cross-module helpers — their home is `apps/<app_name>/<app_name>/utils/api_handlers/` at the app root.
 - **Don't name `<module_name>` the same as `<app_name>`.** They must be distinct.
 - **Don't use `@frappe.whitelist()` inside `doctype/<name>/<name>.py` or `customization/<name>/*.py`.** Not as a class method, not as a module function. Controller files hold plain lifecycle logic only; write a wrapper under `<module_name>/api/` for anything the client needs to call.
 - **Don't put doc-scoped logic in standalone APIs.** If the function fetches one doc and acts on it, keep the actual business logic in the controller's (non-whitelisted) method, and keep the `<module_name>/api/` wrapper thin — validate, delegate, format the response.
