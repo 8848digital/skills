@@ -169,10 +169,9 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 │   │   ├── __init__.py
 │   │   ├── common.py                  ← Truly generic, cross-cutting helpers (e.g. jinja method/filter targets) — the only app-root "catch-all", keep it small
 │   │   └── api_handlers/              ← Cross-cutting helpers used BY whitelisted endpoints, but not whitelisted themselves
-│   │       ├── __init__.py
-│   │       ├── api_error_handler.py   ← Centralised exception → HTTP response, shared across all API versions/modules
-│   │       ├── before_request.py      ← Pre-request guards / auth checks, shared across all API versions/modules
 │   │       └── response_formatter.py  ← Standardised JSON envelope helper (`api_response(...)`), shared across all API versions/modules
+│   │       └── envelope.py            
+│   │       └── error_messages.py      
 │   │
 │   ├── commands/                      ← Custom `bench` CLI commands
 │   │   ├── __init__.py
@@ -270,7 +269,7 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 | **`<module_name>` naming** | The module directory must be named distinctly from `<app_name>`. Never reuse the app's own name as the module name. |
 | **Customization folder naming** | The folder for extending/overriding standard ERPNext/Frappe documents functionality must be named `customization/`. Never name it `custom/` or any other variant. |
 | **API location** | All whitelisted endpoint code — `api.py` files, `api/` folders, and versioned endpoint files — lives **only** under `<module_name>/api/`. It must never appear inside `doctype/`, `customization/`, or as a standalone folder anywhere else in the app. Non-whitelisted helper code that supports the API layer (error handling, pre-request guards, response formatting) is not itself endpoint code and lives in `utils/api_handlers/` instead — see below. This includes `hooks.py`'s `override_whitelisted_methods` targets — the override function is itself whitelisted and lives under `<module_name>/api/`, same as any other endpoint. |
-| **API support helpers location** | `api_error_handler.py`, `before_request.py`, and `response_formatter.py` (and any similar cross-cutting, non-whitelisted API helper) live in `utils/api_handlers/` at the app root — not inside any module's `api/` folder. This is a single shared location reused by every module's `api/vN/` endpoints in the app, so the response envelope and error handling stay identical across modules. |
+| **API support helpers location** | `error_messages.py`, `envelope.py`, and `response_formatter.py` (and any similar cross-cutting, non-whitelisted API helper) live in `utils/api_handlers/` at the app root — not inside any module's `api/` folder. This is a single shared location reused by every module's `api/vN/` endpoints in the app, so the response envelope and error handling stay identical across modules. |
 | **Whitelisting** | `@frappe.whitelist()` may only be used on functions inside `<module_name>/api/`. Never whitelist a method or function inside `doctype/<name>/<name>.py` or `customization/<name>/*.py` — controller and customization files hold plain, non-whitelisted logic; expose it via a thin wrapper in `<module_name>/api/`. |
 | **API versioning** | All public endpoints live under `<module_name>/api/v1/`. Never put versioned logic directly in the module root. |
 | **API docstrings** | Every `@frappe.whitelist()` function must have a docstring documenting a 2–3 line explanation, the endpoint path, HTTP method, parameters (name, type, required/optional, description), and the response format. Dotted paths use the `<app_name>.<module_name>` convention. See [api.md](./skills/frappe-app-dev/references/api.md) for the required template. |
@@ -363,14 +362,13 @@ surface, not just one module's:
             __init__.py
     utils/
         api_handlers/
-            api_error_handler.py    ← applies across all versions and modules
-            before_request.py       ← applies across all versions and modules
             response_formatter.py   ← standard response-shape helper, imported by api/vN/ files
+            envelope.py             ← standard response-shape helper, imported by api/vN/ files
+            error_messages.py       ← standard response-shape helper, imported by api/vN/ files
 ````
 
 - Each resource gets its own file under `v1/` (or the current version).
-- Cross-cutting concerns (`api_error_handler.py`, `before_request.py`,
-  `response_formatter.py`) live in `utils/api_handlers/` at the app root —
+- Cross-cutting concerns (`response_formatter.py`, `envelope.py`, `error_messages.py`) live in `utils/api_handlers/` at the app root —
   never duplicated per module, and never inside `api/` itself.
 - `response_formatter.py` is where the `api_response(...)` helper belongs;
   import it into any `api/vN/*.py` file that needs to shape a response.
@@ -405,7 +403,7 @@ surface, not just one module's:
   preference — it keeps the whitelisted surface area auditable from a
   single location. Non-whitelisted API support helpers still go in
   `utils/api_handlers/`, not inside `api/`.
-- **Don't put `api_error_handler.py`/`before_request.py`/`response_formatter.py`
+- **Don't put `envelope.py`/`error_messages.py`/`response_formatter.py`
   back inside `<module_name>/api/`.** They're shared, non-whitelisted
   helpers — their home is `utils/api_handlers/` at the app root, reused by
   every module's `api/vN/` files.

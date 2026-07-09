@@ -246,10 +246,10 @@ apps/<app_name>/<app_name>/<module_name>/api/
         reports.py
 apps/<app_name>/<app_name>/utils/
     api_handlers/
-        __init__.py
-        api_error_handler.py
-        before_request.py
         response_formatter.py
+        envelope.py
+        error_messages.py
+
 ````
 
 There is no doctype-scoped or customization-scoped `api.py` variant, and no
@@ -479,7 +479,7 @@ Import it into any module's endpoint file the same way, regardless of which
 from <app_name>.utils.api_handlers.response_formatter import api_response
 ````
 
-`api_error_handler.py` and `before_request.py` in the same
+`error_messages.py` and `envelope.py` in the same
 `utils/api_handlers/` folder follow the same pattern — one shared
 implementation, imported by every module's `api/vN/` files, never
 duplicated per module and never placed inside `api/` itself.
@@ -561,7 +561,7 @@ def get_or_create_token(): ...
 ## Anti-patterns
 
 - **Don't create `api.py` files or `api/` folders inside `doctype/`, `customization/`, or the app root.** All whitelisted endpoint code lives in exactly one place: `<module_name>/api/`.
-- **Don't put `api_error_handler.py`/`before_request.py`/`response_formatter.py` inside `<module_name>/api/`.** They're non-whitelisted, cross-module helpers — their home is `apps/<app_name>/<app_name>/utils/api_handlers/` at the app root.
+- **Don't put `error_messages.py`/`envelope.py`/`response_formatter.py` inside `<module_name>/api/`.** They're non-whitelisted, cross-module helpers — their home is `apps/<app_name>/<app_name>/utils/api_handlers/` at the app root.
 - **Don't name `<module_name>` the same as `<app_name>`.** They must be distinct.
 - **Don't use `@frappe.whitelist()` inside `doctype/<name>/<name>.py` or `customization/<name>/*.py`.** Not as a class method, not as a module function. Controller files hold plain lifecycle logic only; write a wrapper under `<module_name>/api/` for anything the client needs to call.
 - **Don't put doc-scoped logic in standalone APIs.** If the function fetches one doc and acts on it, keep the actual business logic in the controller's (non-whitelisted) method, and keep the `<module_name>/api/` wrapper thin — validate, delegate, format the response.
