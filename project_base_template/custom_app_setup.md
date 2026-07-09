@@ -22,11 +22,11 @@ Open the `pyproject.toml` file.
 
 A `pyproject.toml` file is **already created by default** when the app is scaffolded (e.g. via `bench new-app`) — you don't need to run `flit init` to generate it. Just open the existing `pyproject.toml` in your app directory and **replace its contents** with the template below.
 
-> Replace `<app_name>`, `<email_id>`, and `<App Description>` with your actual app details. Add any real third-party packages your app needs to the `dependencies` list (e.g. `"PyMuPDF>=1.26.7"`) — the commented `frappe~=15.0.0` line is just a reminder that frappe itself is managed by bench, not listed here.
+Replace `<app_name>`, `<email_id>`, and `<App Description>` with your actual app details. Add any real third-party packages your app needs to the `dependencies` list (e.g. `"PyMuPDF>=1.26.7"`) — the commented `frappe~=15.0.0` line is just a reminder that frappe itself is managed by bench, not listed here.
 
 > **What to edit vs. what to copy as-is:**
-> - **`[project]` — this is the only part you customize per app. Fill in `<app_name>`, `<email_id>`, `<App Description>`, and your real `dependencies`.
-> - **`[tool.black]` through `[tool.ruff.format]`** — copy this section exactly as written, with no changes. It's the shared lint/format config used across all apps, so it should be identical from app to app.
+- `[project]` — this is the only part you customize per app. Fill in `<app_name>`, `<email_id>`, `<App Description>`, and your real `dependencies`.
+- `[tool.black]` through `[tool.ruff.format]` — copy this section exactly as written, with no changes. It's the shared lint/format config used across all apps, so it should be identical from app to app.
 
 
 ### Example `pyproject.toml`
