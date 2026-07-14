@@ -96,7 +96,7 @@ feature work is considered done:
   [readme.md](./readme.md). Fill in Overview/Key DocTypes/Features as they're
   built in Step 8, but create the file with at least the Overview and
   Installation sections now.
-- **`LICENSE.md`** — verbatim template, per
+- **`license.txt`** — verbatim template, per
   [licensing.md](./licensing.md). Non-negotiable, no exceptions.
 - **`SETUP.md`** — only if the app will have an external integration or a
   Settings DocType with required fields (ask the user if unsure). Create it
@@ -105,13 +105,13 @@ feature work is considered done:
 - Add the copyright header (per [licensing.md](./licensing.md)) to every
   `.py`/`.js`/`.md` file created from this point on, including files
   generated in this workflow.
-- **Align packaging metadata with `LICENSE.md`.** `bench new-app`'s scaffold
+- **Align packaging metadata with `license.txt`.** `bench new-app`'s scaffold
   prompt asks for a license identifier (e.g. `mit`) and writes it into
   `pyproject.toml`. For 8848 Digital apps this must be `Proprietary`, not an
   open-source identifier — open the generated `pyproject.toml` after
   scaffolding and correct the `license` field (and `classifiers`, if present)
-  to match `LICENSE.md`. Never leave an OSS license identifier (MIT, Apache-2.0,
-  etc.) sitting alongside a proprietary `LICENSE.md`.
+  to match `license.txt`. Never leave an OSS license identifier (MIT, Apache-2.0,
+  etc.) sitting alongside a proprietary `license.txt`.
 
 ## Step 7: Install app on site
 

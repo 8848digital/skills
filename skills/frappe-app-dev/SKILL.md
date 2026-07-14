@@ -62,6 +62,6 @@ Load ONLY the references needed for the current task:
 | Bench CLI        | All bench commands reference                 | [bench-operations.md](./references/bench-operations.md) |
 | README.md        | Writing/updating the app's functional README | [readme.md](./references/readme.md)                     |
 | SETUP.md         | Documenting integration/config requirements  | [setup.md](./references/setup.md)                       |
-| Licensing & file headers | Adding LICENSE.md, per-file copyright headers | [licensing.md](./references/licensing.md)         |
+| Licensing & file headers | Adding license.txt, per-file copyright headers | [licensing.md](./references/licensing.md)         |
 
 ## Important: Do NOT load all references at once. Read only what the current task requires.

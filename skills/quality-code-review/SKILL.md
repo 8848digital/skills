@@ -38,7 +38,7 @@ one found; none of them require deep reading.
 - **Copyright header present** on every new/modified `.py`, `.js`, and `.md`
   file — verbatim block from `frappe-app-dev/references/licensing.md`. `.json`
   files are exempt.
-- **`LICENSE.md` exists at repo root**, verbatim template, for any repo this PR
+- **`license.txt` exists at repo root**, verbatim template, for any repo this PR
   touches structurally (e.g. first PR into a new app).
 - **`README.md` updated** if the PR adds/removes a feature, a DocType a user
   needs to know about, or an integration — see

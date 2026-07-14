@@ -80,7 +80,7 @@ Then load only the feature references you need for the task:
 | Bench CLI | All bench commands reference | [bench-operations.md](./skills/frappe-app-dev/references/bench-operations.md) |
 | README.md | Writing/updating the app's functional README | [readme.md](./skills/frappe-app-dev/references/readme.md) |
 | SETUP.md | Documenting integration/config requirements | [setup.md](./skills/frappe-app-dev/references/setup.md) |
-| Licensing & file headers | Adding LICENSE.md, per-file copyright headers | [licensing.md](./skills/frappe-app-dev/references/licensing.md) |
+| Licensing & file headers | Adding license.txt, per-file copyright headers | [licensing.md](./skills/frappe-app-dev/references/licensing.md) |
 
 ---
 
@@ -216,7 +216,7 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 ├── pyproject.toml                     ← PEP 517 build metadata
 ├── README.md                          ← Functional overview — see references/readme.md
 ├── SETUP.md                           ← Integration/config requirements — see references/setup.md (only if the app has integrations/settings; see rule below)
-└── LICENSE.md                         ← Mandatory in every project — see references/licensing.md
+└── license.txt                        ← Mandatory in every project — see references/licensing.md
 ````
 
 > **Note on `utils/` vs a root `utils.py`:** this app has exactly one `utils`
@@ -260,7 +260,7 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 | `patches.txt` | Data migration patches run on `bench migrate`. |
 | `README.md` | Functional documentation of what the app does — see [readme.md](./skills/frappe-app-dev/references/readme.md). |
 | `SETUP.md` | Integration/configuration requirements — see [setup.md](./skills/frappe-app-dev/references/setup.md). Omit only if the app has zero external integrations and zero required settings. |
-| `LICENSE.md` | Mandatory in every repo, verbatim template — see [licensing.md](./skills/frappe-app-dev/references/licensing.md). |
+| `license.txt` | Mandatory in every repo, verbatim template — see [licensing.md](./skills/frappe-app-dev/references/licensing.md). |
 
 ### Key Conventions
 
@@ -287,7 +287,7 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 | **Commit messages** | Follow Conventional Commits (enforced by `commitlint.config.js`). |
 | **README.md** | Every app ships a functional `README.md` at repo root per [readme.md](./skills/frappe-app-dev/references/readme.md) — what the app does, not how it's structured. |
 | **SETUP.md** | Every app with an external integration or a Settings-style DocType ships a `SETUP.md` at repo root per [setup.md](./skills/frappe-app-dev/references/setup.md), listing mandatory fields/credentials. |
-| **LICENSE.md** | Mandatory in every repo, verbatim, per [licensing.md](./skills/frappe-app-dev/references/licensing.md). |
+| **license.txt** | Mandatory in every repo, verbatim, per [licensing.md](./skills/frappe-app-dev/references/licensing.md). |
 | **File headers** | Every `.py` and `.js` file (and `.md` docs) carries the copyright header from [licensing.md](./skills/frappe-app-dev/references/licensing.md). JSON files are exempt (no comment syntax). |
 
 ---
@@ -420,7 +420,7 @@ surface, not just one module's:
 - **Don't write a function without a docstring.** This applies to every
   function/method/class in the app, not only whitelisted endpoints — see
   [code-style SKILL.md](./skills/code-style/SKILL.md).
-- **Don't ship a repo without `LICENSE.md`.** Every project gets the
+- **Don't ship a repo without `license.txt`.** Every project gets the
   verbatim template from [licensing.md](./skills/frappe-app-dev/references/licensing.md), no exceptions.
 - **Don't ship `.py`/`.js`/`.md` files without the copyright header.** See
   [licensing.md](./skills/frappe-app-dev/references/licensing.md) for the exact block per file type. JSON files are the only exemption.

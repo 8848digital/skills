@@ -72,10 +72,10 @@ bench set-config -g developer_mode 1
 ## Step 5: Check mandatory project files
 
 ```bash
-ls apps/<app-name>/README.md apps/<app-name>/LICENSE.md apps/<app-name>/SETUP.md
+ls apps/<app-name>/README.md apps/<app-name>/license.txt apps/<app-name>/SETUP.md
 ```
 
-- **Missing `LICENSE.md`** — add it now, verbatim, per
+- **Missing `license.txt`** — add it now, verbatim, per
   [licensing.md](./licensing.md), regardless of what this task is about.
 - **Missing `README.md`** — add a minimal one per [readme.md](./readme.md)
   before proceeding; backfilling the full Key DocTypes/Features tables can
