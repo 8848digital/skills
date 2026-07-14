@@ -1,20 +1,20 @@
 ---
 name: licensing-file-headers
-description: Enforce 8848 Digital LLP proprietary licensing across a repo — a mandatory LICENSE.md at repo root, a proprietary copyright header on every .py/.js/.md source file, and app_license = "Proprietary" in hooks.py for Frappe apps. Use this skill whenever creating a new repo or app, adding a new source file, editing hooks.py, editing README.md's license section, or when the user asks to "add licensing", "fix the license", "add copyright headers", or mentions LICENSE.md/app_license. Also trigger proactively any time a new .py, .js, or .md file is created in a project that uses this licensing convention — the header is part of file creation, not a follow-up edit.
+description: Enforce 8848 Digital LLP proprietary licensing across a repo — a mandatory license.txt at repo root, a proprietary copyright header on every .py/.js/.md source file, and app_license = "Proprietary" in hooks.py for Frappe apps. Use this skill whenever creating a new repo or app, adding a new source file, editing hooks.py, editing README.md's license section, or when the user asks to "add licensing", "fix the license", "add copyright headers", or mentions license.txt/app_license. Also trigger proactively any time a new .py, .js, or .md file is created in a project that uses this licensing convention — the header is part of file creation, not a follow-up edit.
 ---
 
 # Licensing & File Headers
 
 
 This skill makes a repo's licensing consistent and legally correct: one
-canonical `LICENSE.md`, an identical copyright header repeated verbatim
+canonical `license.txt`, an identical copyright header repeated verbatim
 across source files, and the `app_license` field in Frappe's `hooks.py`
 kept in sync. Treat this as a checklist to run against a repo, not just a
 one-off text insertion.
 
-## LICENSE.md — mandatory at repo root
+## license.txt — mandatory at repo root
 
-Every project must have a `LICENSE.md` at the repo root. If it's missing,
+Every project must have a `license.txt` at the repo root. If it's missing,
 or if it currently contains MIT/Apache/BSD/AGPL boilerplate, replace it
 with the following text verbatim (only the year may change, and only if
 explicitly instructed to):
@@ -79,7 +79,7 @@ Copy the wording exactly — do not vary it file-to-file or paraphrase it.
 - **Auto-generated files** that aren't hand-edited (e.g. `modules.txt`,
   build output). If a generator/template exists, add the header there
   instead.
-- **`LICENSE.md` itself** — it is the notice, it doesn't repeat it.
+- **`license.txt` itself** — it is the notice, it doesn't repeat it.
 
 ## 3. Frappe-specific: `hooks.py` and `README.md`
 
@@ -99,14 +99,14 @@ two more places:
   ## License
 
   Proprietary — Copyright (c) 2026 8848 Digital LLP. All rights reserved.
-  See [LICENSE.md](LICENSE.md) for details.
+  See [license.txt](license.txt) for details.
   ```
 
 ## 4. Workflow when applying this skill
 
 When asked to license a repo, or when creating a new app/file in one that
 uses this convention, work through this order:
-1. Check for `LICENSE.md` at repo root — create or replace per Section 1.
+1. Check for `license.txt` at repo root — create or replace per Section 1.
 2. Check `hooks.py` (if a Frappe app) — set `app_license` per Section 3.
 3. Check `README.md`'s license section — update per Section 3.
 4. Sweep `.py` / `.js` / `.md` files for the header in Section 2 — add to
@@ -117,7 +117,7 @@ uses this convention, work through this order:
 ## Anti-patterns
 
 - Don't add the header to `.json` files — it breaks the file.
-- Don't paraphrase the header or LICENSE.md text — copy exactly.
+- Don't paraphrase the header or license.txt text — copy exactly.
 - Don't forget the header on new files created mid-task.
 - Don't leave `app_license` or the README license section unsynced with
-  the actual `LICENSE.md` — all three should agree.
+  the actual `license.txt` — all three should agree.
