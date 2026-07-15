@@ -38,7 +38,11 @@ Do **not** invent alternate configs. Copy templates from that file (replace
    | `.editorconfig` | Tabs for py/js; spaces for json |
    | `.github/workflows/linters.yml` | See versions below |
 
-5. Verify final tree matches Section 6 of the guide
+5. Copy `project_base_template/commands/` into
+   `apps/<app_name>/<app_name>/commands/` (`__init__.py`,
+   `export_fixtures.py`, `README.md`) — see Section 4.7 of the guide
+6. In `hooks.py`, add `custom_fixtures` and `commands` (see Section 4.7)
+7. Verify final tree matches Section 6 of the guide
 
 ## CI workflow choice
 
@@ -57,6 +61,7 @@ Prefer Version B for newly scaffolded apps.
 apps/<app_name>/
 ├── .github/workflows/linters.yml
 ├── <app_name>/
+│   └── commands/          # from project_base_template/commands/
 ├── scripts/check_max_lines.py
 ├── .eslintrc
 ├── .flake8
@@ -74,6 +79,8 @@ apps/<app_name>/
 - [ ] All files from the guide exist with correct content
 - [ ] `<app_name>` placeholders replaced in pre-commit excludes
 - [ ] `pyproject.toml` tool sections match the shared template
+- [ ] `commands/` copied from `project_base_template/commands/`
+- [ ] `hooks.py` has `custom_fixtures` and `commands` wired (Section 4.7)
 - [ ] Correct `linters.yml` version chosen
 - [ ] User told to run `pre-commit install` / `pre-commit run --all-files` if
       not already done in this session
