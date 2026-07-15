@@ -1,0 +1,252 @@
+---
+name: "Unit Testing Rules"
+description: "Comprehensive unit testing standards, patterns, and best practices for Frappe/ERPNext applications"
+auto_attach: true
+---
+
+# Unit Testing Rules
+
+## Test File Organization
+- Place test files in `tests/` directory within each app
+- Name test files as `test_<module_name>.py`
+- Group related tests in test classes
+- Use descriptive test method names
+
+## Test File Structure
+```
+tests/
+├── test_doctype/
+│   ├── test_customer.py
+│   ├── test_sales_order.py
+│   └── test_invoice.py
+├── test_api/
+│   ├── test_customer_api.py
+│   └── test_sales_api.py
+├── test_integration/
+│   └── test_workflows.py
+└── fixtures/
+    ├── test_data.json
+    └── test_config.py
+```
+
+## Test Method Naming Convention
+- Use descriptive names that explain the scenario
+- Follow pattern: `test_<method>_<scenario>_<expected_result>`
+- Examples:
+  - `test_create_customer_with_valid_data_succeeds`
+  - `test_create_customer_with_invalid_email_raises_error`
+  - `test_calculate_tax_with_zero_amount_returns_zero`
+
+## Test Data Management
+- Use `setUp()` and `tearDown()` methods for test data
+- Create test data factories for complex objects
+- Use `frappe.get_test_records()` for standard test data
+- Clean up test data after each test
+
+## Test Data Example
+```python
+import frappe
+from frappe.tests.utils import FrappeTestCase
+
+class TestCustomer(FrappeTestCase):
+    def setUp(self):
+        """Set up test data before each test"""
+        self.customer_data = {
+            "doctype": "Customer",
+            "customer_name": "Test Customer",
+            "customer_type": "Company",
+            "customer_group": "Commercial"
+        }
+    
+    def tearDown(self):
+        """Clean up test data after each test"""
+        frappe.db.rollback()
+    
+    def test_create_customer_with_valid_data_succeeds(self):
+        """Test creating a customer with valid data"""
+        customer = frappe.get_doc(self.customer_data)
+        customer.insert()
+        
+        self.assertIsNotNone(customer.name)
+        self.assertEqual(customer.customer_name, "Test Customer")
+```
+
+## Assertion Best Practices
+- Use specific assertions for better error messages
+- Test one thing per test method
+- Use descriptive assertion messages
+- Test both positive and negative cases
+
+## Common Assertions
+```python
+# Existence checks
+self.assertIsNotNone(result)
+self.assertIsNone(result)
+
+# Equality checks
+self.assertEqual(actual, expected)
+self.assertNotEqual(actual, expected)
+
+# Type checks
+self.assertIsInstance(result, Customer)
+self.assertIsInstance(result, list)
+
+# Exception checks
+with self.assertRaises(frappe.ValidationError):
+    invalid_doc.insert()
+
+# Boolean checks
+self.assertTrue(condition)
+self.assertFalse(condition)
+```
+
+## Testing Doctypes
+- Test field validation rules
+- Test custom validation methods
+- Test before_save and after_save hooks
+- Test permission checks
+- Test workflow transitions
+
+## Doctype Test Example
+```python
+def test_customer_validation_prevents_duplicate_email(self):
+    """Test that duplicate email addresses are not allowed"""
+    # Create first customer
+    customer1 = frappe.get_doc(self.customer_data)
+    customer1.email_id = "test@example.com"
+    customer1.insert()
+    
+    # Try to create second customer with same email
+    customer2 = frappe.get_doc(self.customer_data)
+    customer2.email_id = "test@example.com"
+    
+    with self.assertRaises(frappe.DuplicateEntryError):
+        customer2.insert()
+```
+
+## Testing API Endpoints
+- Test all HTTP methods (GET, POST, PUT, DELETE)
+- Test authentication requirements
+- Test permission checks
+- Test request validation
+- Test response formats
+
+## API Test Example
+```python
+def test_get_customer_api_requires_authentication(self):
+    """Test that customer API requires authentication"""
+    response = self.client.get("/api/resource/Customer")
+    self.assertEqual(response.status_code, 401)
+
+def test_create_customer_api_with_valid_data(self):
+    """Test creating customer via API"""
+    self.client.login("test@example.com", "password")
+    
+    response = self.client.post("/api/resource/Customer", {
+        "customer_name": "API Test Customer",
+        "customer_type": "Company"
+    })
+    
+    self.assertEqual(response.status_code, 200)
+    self.assertIn("name", response.json["data"])
+```
+
+## Testing Custom Functions
+- Test all code paths
+- Test edge cases and boundary conditions
+- Test error handling
+- Mock external dependencies
+
+## Function Test Example
+```python
+def test_calculate_discount_with_valid_percentage(self):
+    """Test discount calculation with valid percentage"""
+    amount = 1000
+    discount_percent = 10
+    expected_discount = 100
+    
+    result = calculate_discount(amount, discount_percent)
+    self.assertEqual(result, expected_discount)
+
+def test_calculate_discount_with_zero_percentage(self):
+    """Test discount calculation with zero percentage"""
+    amount = 1000
+    discount_percent = 0
+    expected_discount = 0
+    
+    result = calculate_discount(amount, discount_percent)
+    self.assertEqual(result, expected_discount)
+
+def test_calculate_discount_with_negative_percentage_raises_error(self):
+    """Test discount calculation with negative percentage raises error"""
+    amount = 1000
+    discount_percent = -10
+    
+    with self.assertRaises(ValueError):
+        calculate_discount(amount, discount_percent)
+```
+
+## Mocking and Patching
+- Mock external API calls
+- Mock database operations when testing business logic
+- Use `unittest.mock` for complex mocking
+- Test error scenarios with mocked failures
+
+## Mock Example
+```python
+from unittest.mock import patch, MagicMock
+
+def test_send_email_notification_mocks_email_service(self):
+    """Test email notification with mocked email service"""
+    with patch('frappe.sendmail') as mock_sendmail:
+        mock_sendmail.return_value = True
+        
+        result = send_customer_notification("test@example.com", "Welcome!")
+        
+        self.assertTrue(result)
+        mock_sendmail.assert_called_once()
+```
+
+## Test Coverage Requirements
+- Aim for minimum 80% code coverage
+- Focus on critical business logic
+- Test all public methods
+- Test error handling paths
+- Test edge cases
+
+## Running Tests
+- Run tests before committing code
+- Use pytest for better test discovery
+- Generate coverage reports
+- Run tests in isolation
+
+## Test Commands
+```bash
+# Run all tests
+bench --site site1.local run-tests
+
+# Run specific test file
+bench --site site1.local run-tests --module app_name.tests.test_customer
+
+# Run with coverage
+bench --site site1.local run-tests --coverage
+
+# Run tests in parallel
+bench --site site1.local run-tests --parallel
+```
+
+## Test Documentation
+- Document complex test scenarios
+- Explain test data setup
+- Document test dependencies
+- Keep test documentation up to date
+
+## Best Practices Summary
+1. **Isolation**: Each test should be independent
+2. **Speed**: Tests should run quickly
+3. **Reliability**: Tests should be deterministic
+4. **Maintainability**: Tests should be easy to understand and modify
+5. **Coverage**: Test all important code paths
+6. **Naming**: Use descriptive test names
+7. **Data**: Use appropriate test data
+8. **Cleanup**: Always clean up after tests

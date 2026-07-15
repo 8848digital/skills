@@ -1,10 +1,16 @@
-# CLAUDE.md — Frappe Skills & Custom App Structure
+# AGENTS.md — Frappe Skills & Custom App Structure
 
-This file documents the agent skills available in this repository and the
-canonical structure of a custom Frappe application used in this project.
-Read this file at the start of every session that involves Frappe development.
+Cursor project instructions for Frappe development. Documents the agent skills
+available in this repository and the canonical structure of a custom Frappe
+application used in this project.
 
-All paths below are **relative to this file** (the skills repo root).
+**Read this file** (via the always-applied `rules/frappe.mdc` rule) at
+the start of every session that involves Frappe development. Then **Read**
+only the `SKILL.md` / reference files needed for the current task — do not
+load every skill at once.
+
+All paths below are **relative to this file** (the skills repo root at
+`.cursor/frappe-skills/`).
 To resolve any path dynamically in Python:
 
 ````python
@@ -13,7 +19,7 @@ import pathlib
 # Resolve the skills repo root from any script inside the repo
 SKILLS_ROOT = pathlib.Path(__file__).resolve().parent
 # -- or, from anywhere on disk --
-SKILLS_ROOT = pathlib.Path("CLAUDE.md").resolve().parent
+SKILLS_ROOT = pathlib.Path("AGENTS.md").resolve().parent
 
 # Example: open a skill file
 skill_path = SKILLS_ROOT / "skills" / "frappe-app-dev" / "SKILL.md"
@@ -36,22 +42,22 @@ Each skill has a `SKILL.md` — read it before writing code for that topic.
 
 ### Activation Rules
 
-- **Always** load `code-style` when writing or editing Python or JavaScript.
-- **Always** load `frappe-app-dev` for any Frappe/bench task.
-- Load `ui-design` for any front-end or UX task.
-- Load `quality-code-review` when explicitly reviewing existing code, **and**
+- **Always** Read `code-style` when writing or editing Python or JavaScript.
+- **Always** Read `frappe-app-dev` for any Frappe/bench task.
+- Read `ui-design` for any front-end or UX task.
+- Read `quality-code-review` when explicitly reviewing existing code, **and**
   always run its §0 Project hygiene checklist as a final pass before ending
   any task that created or modified files — docstrings, copyright headers,
   README/SETUP updates, structural conventions. This is a quick self-check,
   not a full §1–§8 review; only run the full checklist when the user actually
   asks for a code review.
-- Do **not** load all skills at once. Load only what the current task needs.
+- Do **not** Read all skills at once. Load only what the current task needs.
 
 ---
 
 ## frappe-app-dev — Flow Selection
 
-Once [SKILL.md](./skills/frappe-app-dev/SKILL.md) is loaded, pick exactly one flow:
+Once [SKILL.md](./skills/frappe-app-dev/SKILL.md) is Read, pick exactly one flow:
 
 | Situation | Reference file |
 | --------- | -------------- |

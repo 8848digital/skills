@@ -1,0 +1,40 @@
+---
+description: Frappe Framework development — skills activation and app structure
+alwaysApply: true
+---
+
+# Frappe Development
+
+When generating Frappe code, follow `AGENTS.md` and the skills under `skills/`
+in this frappe-skills repo (`.cursor/frappe-skills/`).
+
+## Before coding
+
+1. Read [AGENTS.md](../AGENTS.md) for skills activation and the canonical
+   custom-app layout.
+2. Read only the `SKILL.md` / reference files the current task needs.
+
+## Skills — when to activate
+
+| Skill | When to Read |
+| ----- | ------------ |
+| `frappe-app-dev` | Any Frappe/bench task (DocTypes, controllers, APIs, hooks, permissions, jobs, tests, bench CLI) — [SKILL.md](../skills/frappe-app-dev/SKILL.md) |
+| `code-style` | Writing or editing Python/JS — [SKILL.md](../skills/code-style/SKILL.md) |
+| `ui-design` | Desk UI, Vue SPA, portal, or front-end UX — [SKILL.md](../skills/ui-design/SKILL.md) |
+| `quality-code-review` | Explicit code review; also run its §0 hygiene checklist before ending any file-creating/editing task — [SKILL.md](../skills/quality-code-review/SKILL.md) |
+
+- **Always** Read `code-style` when writing or editing Python or JavaScript.
+- **Always** Read `frappe-app-dev` for any Frappe/bench task.
+- Do **not** Read all skills at once.
+
+## frappe-app-dev flow
+
+After Reading `frappe-app-dev` SKILL.md, pick one flow:
+
+- New app → `references/new-app.md`, then complete tooling per
+  [custom-app.mdc](./custom-app.mdc) (source:
+  [custom_app_setup.md](../project_base_template/custom_app_setup.md))
+- Existing app → `references/existing-app.md`
+
+Then load only the feature references needed (doctypes, controllers, api,
+hooks, etc.) — see the table in AGENTS.md.

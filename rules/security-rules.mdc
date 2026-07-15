@@ -1,0 +1,42 @@
+---
+description: Security best practices for handling sensitive data, authentication, and API security
+globs: 
+alwaysApply: false
+---
+---
+name: "Security Rules"
+description: "Security best practices for handling sensitive data, authentication, and API security"
+auto_attach: true
+---
+
+# Security Rules
+
+## Data Protection
+- Never commit API keys, passwords, or sensitive data
+- Use environment variables for configuration
+- Encrypt sensitive data in database
+- Implement proper access controls
+
+## Authentication & Authorization
+- Always check user permissions before data access
+- Use Frappe's permission system
+- Implement role-based access control
+- Validate user input on server side
+
+## API Security
+- Use HTTPS for all external communications
+- Implement rate limiting
+- Validate and sanitize all inputs
+- Use parameterized queries to prevent SQL injection
+
+## File Upload Security
+- Validate file types and sizes
+- Scan uploaded files for malware
+- Store files outside web root
+- Use secure file naming conventions
+
+## Environment Variables
+- Store sensitive data in .env files
+- Never commit .env files to version control
+- Use different environments for dev/staging/prod
+- Rotate secrets regularly

@@ -51,7 +51,7 @@ one found; none of them require deep reading.
 - **Structural conventions held**: `<module_name> != <app_name>`, no `api.py`/
   `api/` outside `<module_name>/api/`, no `@frappe.whitelist()` outside
   `<module_name>/api/`, `customization/` (never `custom/`) used only for
-  DocTypes owned elsewhere — see `CLAUDE.md`.
+  DocTypes owned elsewhere — see `AGENTS.md`.
 
 ---
 

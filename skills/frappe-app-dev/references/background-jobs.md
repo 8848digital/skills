@@ -15,7 +15,7 @@ frappe.enqueue(
 )
 ````
 
-The function lives in `<module_name>/tasks.py` (see `CLAUDE.md`'s tree) and
+The function lives in `<module_name>/tasks.py` (see `AGENTS.md`'s tree) and
 must be importable:
 ````python
 # apps/<app_name>/<app_name>/<module_name>/tasks.py

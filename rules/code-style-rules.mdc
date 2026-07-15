@@ -1,0 +1,39 @@
+---
+description: Coding standards and style guidelines for Python and JavaScript in Frappe/ERPNext applications
+globs: 
+alwaysApply: false
+---
+---
+name: "Code Style Rules"
+description: "Coding standards and style guidelines for Python and JavaScript in Frappe/ERPNext applications"
+auto_attach: true
+---
+
+# Code Style Rules
+
+## Python Code Style
+- Follow PEP 8 guidelines
+- Use 4 spaces for indentation (no tabs)
+- Maximum line length: 88 characters (Black formatter)
+- Use snake_case for variables, functions, and modules
+- Use PascalCase for classes
+- Use UPPER_CASE for constants
+
+## JavaScript Code Style
+- Use camelCase for variables and functions
+- Use PascalCase for components and classes
+- Use 2 spaces for indentation
+- Use semicolons at the end of statements
+- Use single quotes for strings
+
+## Import Organization
+1. Standard library imports
+2. Third-party imports
+3. Local application imports
+4. Separate groups with blank lines
+
+## Naming Conventions
+- **Doctypes**: Use singular form, PascalCase (e.g., `Customer`, `SalesOrder`)
+- **Fields**: Use snake_case (e.g., `customer_name`, `order_date`)
+- **Functions**: Use snake_case with descriptive names
+- **Variables**: Use snake_case, avoid abbreviations

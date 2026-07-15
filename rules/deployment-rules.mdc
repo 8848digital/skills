@@ -1,0 +1,48 @@
+---
+description: Deployment best practices, environment management, and monitoring guidelines
+globs: 
+alwaysApply: false
+---
+---
+name: "Deployment Rules"
+description: "Deployment best practices, environment management, and monitoring guidelines"
+auto_attach: true
+---
+
+# Deployment Rules
+
+## Environment Management
+- Use separate environments for dev/staging/prod
+- Use environment-specific configurations
+- Never deploy directly to production
+- Test in staging first
+
+## Configuration Management
+- Use environment variables
+- Store secrets securely
+- Use configuration files
+- Version control configuration templates
+
+## Database Migrations
+- Run migrations before deployment
+- Backup database before migrations
+- Test migrations on staging
+- Have rollback procedures
+
+## Monitoring
+- Set up application monitoring
+- Monitor error rates
+- Track performance metrics
+- Set up alerts
+
+## Rollback Strategy
+- Keep previous versions available
+- Test rollback procedures
+- Document rollback steps
+- Have backup strategies
+
+## Security
+- Use HTTPS in production
+- Implement proper firewall rules
+- Regular security updates
+- Monitor for vulnerabilities

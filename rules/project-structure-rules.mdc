@@ -1,0 +1,48 @@
+---
+description: Rules for organizing Frappe/ERPNext applications and maintaining consistent project structure
+globs: 
+alwaysApply: false
+---
+---
+name: "Project Structure Rules"
+description: "Rules for organizing Frappe/ERPNext applications and maintaining consistent project structure"
+auto_attach: true
+---
+
+# Project Structure Rules
+
+## Directory Organization
+- All custom apps must reside in the `apps/` directory
+- Each app should follow Frappe's standard structure:
+  ```
+  app_name/
+  ├── app_name/
+  │   ├── __init__.py
+  │   ├── config/
+  │   ├── modules/
+  │   ├── patches/
+  │   └── templates/
+  ├── hooks.py
+  ├── setup.py
+  └── requirements.txt
+  ```
+
+## Module Structure
+- Each module should be in `app_name/modules/module_name/`
+- Module structure:
+  ```
+  module_name/
+  ├── __init__.py
+  ├── api.py
+  ├── config/
+  ├── doctype/
+  ├── page/
+  ├── report/
+  ├── web_form/
+  └── workspace/
+  ```
+
+## File Organization
+- Keep related files together in logical directories
+- Use descriptive directory names
+- Maintain consistent structure across all apps

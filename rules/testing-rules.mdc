@@ -1,0 +1,43 @@
+---
+description: Testing standards and best practices for Frappe/ERPNext applications
+globs: 
+alwaysApply: false
+---
+---
+name: "Testing Rules"
+description: "Testing standards and best practices for Frappe/ERPNext applications"
+auto_attach: true
+---
+
+# Testing Rules
+
+## Test Structure
+- Create tests for all doctypes
+- Test both positive and negative scenarios
+- Use descriptive test method names
+- Group related tests in test classes
+
+## Test Coverage
+- Aim for minimum 80% code coverage
+- Test all public methods
+- Test edge cases and error conditions
+- Test integration points
+
+## Test Data
+- Use factories for test data creation
+- Clean up test data after tests
+- Use isolated test databases
+- Mock external dependencies
+
+## Test Naming
+- Use descriptive test names
+- Follow pattern: `test_<method>_<scenario>`
+- Example: `test_create_customer_with_valid_data`
+
+## Test Organization
+
+## Running Tests
+- Run tests before committing code
+- Use pytest for test execution
+- Generate coverage reports
+- Fix failing tests immediately

@@ -1,0 +1,56 @@
+---
+description: "REST API design, security, and documentation standards"
+globs: 
+alwaysApply: false
+---
+---
+name: "API Rules"
+description: "REST API design, security, and documentation standards"
+auto_attach: true
+---
+
+# API Rules
+
+## REST API Design
+- Use consistent URL patterns
+- Follow REST conventions
+- Use appropriate HTTP methods
+- Return consistent response formats
+
+## Endpoint Naming
+- Use plural nouns for resources
+- Use kebab-case for URLs
+- Example: `/api/resource/sales-orders`
+
+## Response Format
+```json
+{
+  "message": "Success message",
+  "data": {...},
+  "status": "success"
+}
+```
+
+## Error Handling
+- Use appropriate HTTP status codes
+- Provide meaningful error messages
+- Log errors for debugging
+- Handle exceptions gracefully
+
+## Authentication
+- Require authentication for all endpoints
+- Use token-based authentication
+- Implement proper session management
+- Validate user permissions
+
+## Rate Limiting
+- Implement rate limiting for public APIs
+- Use appropriate limits per endpoint
+- Return proper rate limit headers
+- Monitor API usage
+
+## Documentation
+- Document all API endpoints
+- Include request/response examples
+- Specify required parameters
+- Document error codes

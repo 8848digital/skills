@@ -1,0 +1,55 @@
+---
+description: Guidelines for code documentation, docstrings, and project documentation
+globs: 
+alwaysApply: false
+---
+---
+name: "Documentation Rules"
+description: "Guidelines for code documentation, docstrings, and project documentation"
+auto_attach: true
+---
+
+# Documentation Rules
+
+## Code Documentation
+- All functions must have docstrings
+- Use Google-style docstrings for Python
+- Document all public APIs
+- Include parameter types and return types
+- Add examples for complex functions
+
+## Docstring Format
+```python
+def function_name(param1: str, param2: int) -> bool:
+    """Brief description of function.
+    
+    Longer description if needed.
+    
+    Args:
+        param1: Description of param1
+        param2: Description of param2
+        
+    Returns:
+        Description of return value
+        
+    Raises:
+        ValueError: When invalid parameters provided
+        
+    Example:
+        >>> function_name("test", 123)
+        True
+    """
+```
+
+## README Files
+- Each app must have a README.md
+- Include installation instructions
+- Document configuration options
+- List dependencies
+- Provide usage examples
+
+## Comments
+- Write self-documenting code when possible
+- Add comments for complex business logic
+- Explain "why" not "what"
+- Keep comments up to date with code changes

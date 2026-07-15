@@ -3,7 +3,7 @@
 `README.md` at the app's repo root is written for a **reader who has never
 opened the code** — a new team member, a client, or a future maintainer
 deciding whether this app does what they need. It documents *what the app
-does and why*, not folder structure (that's `CLAUDE.md`'s job).
+does and why*, not folder structure (that's `AGENTS.md`'s job).
 
 ## Required sections, in order
 
@@ -49,7 +49,7 @@ Standard bench install steps, e.g.:
     bench --site <site_name> install-app <app_name>
 
 ## App Structure
-One line: "See [CLAUDE.md](./CLAUDE.md) for internal module/folder layout
+One line: "See [AGENTS.md](./AGENTS.md) for internal module/folder layout
 and coding conventions." Do not re-explain the tree here.
 
 ## Maintainers
@@ -60,7 +60,7 @@ personal phone numbers or unnecessary PII).
 ## Rules
 
 - Write for a non-developer reader wherever possible; save technical detail
-  (whitelisted endpoint names, hook wiring) for `CLAUDE.md`/`api.md`.
+  (whitelisted endpoint names, hook wiring) for `AGENTS.md`/`api.md`.
 - Every DocType this app owns, and every standard DocType it meaningfully
   customizes, must appear in the **Key DocTypes** table — a reader should
   never have to open `doctype/` or `customization/` folders just to learn
@@ -72,7 +72,7 @@ personal phone numbers or unnecessary PII).
 
 ## Anti-patterns
 
-- **Don't paste the `CLAUDE.md` folder tree into `README.md`.** Different
+- **Don't paste the `AGENTS.md` folder tree into `README.md`.** Different
   audience, different job — link to it instead.
 - **Don't list every DocType in the app.** Only ones a reader needs to
   understand to use or reason about the app functionally.

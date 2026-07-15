@@ -1,0 +1,79 @@
+---
+description: Custom Frappe/ERPNext app scaffolding — tooling, lint, pre-commit, and CI setup
+alwaysApply: true
+---
+
+# Custom App Setup
+
+When **creating a new custom app** or **bootstrapping tooling on an existing app**, follow
+[custom_app_setup.md](../project_base_template/custom_app_setup.md) exactly.
+
+Do **not** invent alternate configs. Copy templates from that file (replace
+`<app_name>`, `<email_id>`, `<App Description>` only where noted).
+
+## When this applies
+
+- After `bench new-app` (scaffold is not done until this setup is complete)
+- When the user asks to set up / harden a custom app (lint, pre-commit, CI)
+- When adding missing root tooling files under `apps/<app_name>/`
+
+## Required sequence
+
+1. Activate bench env: `source env/bin/activate` (from bench root)
+2. Replace `apps/<app_name>/pyproject.toml` with the template in the guide
+   - Customize only `[project]` (name, email, description, real dependencies)
+   - Copy `[tool.black]` through `[tool.ruff.format]` **unchanged**
+   - Do not list frappe in `dependencies` (bench manages it)
+3. `pip install pre-commit` then `pre-commit install` inside the app directory
+4. Create these files **verbatim** from the guide (substitute `<app_name>` in
+   pre-commit prettier/eslint excludes):
+
+   | File | Notes |
+   | ---- | ----- |
+   | `.pre-commit-config.yaml` | Includes local `check-max-lines` hook |
+   | `scripts/check_max_lines.py` | Max 250 lines per Python file |
+   | `.eslintrc` | Add missing globals to `globals` if lint fails |
+   | `.flake8` | Copy as-is |
+   | `commitlint.config.js` | Conventional commits |
+   | `.editorconfig` | Tabs for py/js; spaces for json |
+   | `.github/workflows/linters.yml` | See versions below |
+
+5. Verify final tree matches Section 6 of the guide
+
+## CI workflow choice
+
+Use **only one** `linters.yml`:
+
+- **Version B (new projects)** — after pre-commit is configured: includes
+  commit-lint, pre-commit action, semgrep, pip-audit
+- **Version A (existing / no pre-commit in CI)** — commit-lint, semgrep,
+  pip-audit only (no pre-commit job)
+
+Prefer Version B for newly scaffolded apps.
+
+## Expected app root
+
+```
+apps/<app_name>/
+├── .github/workflows/linters.yml
+├── <app_name>/
+├── scripts/check_max_lines.py
+├── .eslintrc
+├── .flake8
+├── .pre-commit-config.yaml
+├── .editorconfig
+├── commitlint.config.js
+├── pyproject.toml
+├── README.md
+├── license.txt
+└── .gitignore
+```
+
+## Agent checklist before finishing
+
+- [ ] All files from the guide exist with correct content
+- [ ] `<app_name>` placeholders replaced in pre-commit excludes
+- [ ] `pyproject.toml` tool sections match the shared template
+- [ ] Correct `linters.yml` version chosen
+- [ ] User told to run `pre-commit install` / `pre-commit run --all-files` if
+      not already done in this session

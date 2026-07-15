@@ -1,0 +1,46 @@
+---
+description: Git branching strategy, commit conventions, and code review process
+globs: 
+alwaysApply: false
+---
+---
+name: "Git Workflow Rules"
+description: "Git branching strategy, commit conventions, and code review process"
+auto_attach: true
+---
+
+# Git Workflow Rules
+
+## Branch Naming
+- Use descriptive branch names
+- Follow pattern: `type/description`
+- Examples: `feature/user-authentication`, `bugfix/login-error`
+
+## Commit Messages
+- Use conventional commit format
+- Write clear, descriptive messages
+- Reference issue numbers
+- Keep commits atomic
+
+## Commit Format
+
+## Types
+- feat: New feature
+- fix: Bug fix
+- docs: Documentation changes
+- style: Code style changes
+- refactor: Code refactoring
+- test: Adding tests
+- chore: Maintenance tasks
+
+## Pull Requests
+- Create PRs for all changes
+- Include clear description
+- Add tests for new features
+- Request code reviews
+
+## Code Review
+- Review all code changes
+- Check for security issues
+- Ensure tests are included
+- Verify documentation updates

@@ -23,7 +23,7 @@ before_uninstall = "<app_name>.install.before_uninstall"  # runs before app is r
 after_uninstall = "<app_name>.install.after_uninstall"    # runs after app is removed
 ````
 
-These target `install.py` at the app-package root (see `CLAUDE.md`'s tree) —
+These target `install.py` at the app-package root (see `AGENTS.md`'s tree) —
 not a module-scoped file, since install/uninstall logic applies to the whole
 app. Use it to create initial data (roles, settings, default records).
 
@@ -106,7 +106,7 @@ scheduler_events = {
 }
 ````
 
-These target `<module_name>/tasks.py` (see `CLAUDE.md`'s tree) — not an
+These target `<module_name>/tasks.py` (see `AGENTS.md`'s tree) — not an
 app-root `tasks.py`. See [background-jobs.md](./background-jobs.md) for
 details on writing the target functions.
 
@@ -223,5 +223,5 @@ has_permission = {
 ````
 
 Jinja helpers and `boot_session` target the app-root `utils.py` /
-`boot_session.py` respectively (see `CLAUDE.md`'s tree) — they're
+`boot_session.py` respectively (see `AGENTS.md`'s tree) — they're
 truly app-wide, not module-scoped.

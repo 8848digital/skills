@@ -1,0 +1,48 @@
+---
+description: Database design, optimization, and migration guidelines for Frappe/ERPNext
+globs: 
+alwaysApply: false
+---
+---
+name: "Database Rules"
+description: "Database design, optimization, and migration guidelines for Frappe/ERPNext"
+auto_attach: true
+---
+
+# Database Rules
+
+## Doctype Design
+- Use meaningful field names
+- Set appropriate field types
+- Add proper validation rules
+- Use links instead of text for relationships
+
+## Field Types
+- Use appropriate field types for data
+- Use Link fields for relationships
+- Use Dynamic Link for flexible relationships
+- Use Table for child records
+
+## Indexing
+- Add indexes on frequently queried fields
+- Index foreign key fields
+- Consider composite indexes for complex queries
+- Monitor query performance
+
+## Data Integrity
+- Use foreign key constraints
+- Implement proper validation
+- Handle cascading deletes appropriately
+- Maintain referential integrity
+
+## Migrations
+- Create patches for schema changes
+- Test migrations on staging first
+- Document breaking changes
+- Provide rollback procedures
+
+## Query Optimization
+- Use Frappe's ORM methods
+- Avoid N+1 query problems
+- Use select fields to limit data
+- Implement proper pagination

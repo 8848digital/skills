@@ -68,7 +68,7 @@ apps/<app_name>/
 
 This is a **starting point only** — proceed to Step 5 before writing any
 feature code. Never leave the module directory named the same as the app;
-see `CLAUDE.md`'s `<module_name>` naming rule.
+see `AGENTS.md`'s `<module_name>` naming rule.
 
 ## Step 5: Restructure module directory to convention
 
@@ -81,7 +81,7 @@ see `CLAUDE.md`'s `<module_name>` naming rule.
 3. Update every reference to the old dotted path
    (`<app_name>.<app_name>.*` → `<app_name>.<module_name>.*`) in `hooks.py`,
    `modules.txt`, and any generated boilerplate.
-4. Create the standard subdirectories under `<module_name>/` per `CLAUDE.md`'s
+4. Create the standard subdirectories under `<module_name>/` per `AGENTS.md`'s
    tree — at minimum `api/v1/`, `doctype/`, `customization/` — as the task
    needs them. Don't pre-create folders the app has no use for yet.
 5. Re-run `bench --site <site> migrate` once after the rename to confirm

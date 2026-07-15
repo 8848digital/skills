@@ -1,0 +1,42 @@
+---
+description: "Performance optimization guidelines for code, database, and frontend"
+globs: 
+alwaysApply: false
+---
+---
+name: "Performance Rules"
+description: "Performance optimization guidelines for code, database, and frontend"
+auto_attach: true
+---
+
+# Performance Rules
+
+## Code Optimization
+- Avoid unnecessary database queries
+- Use caching for expensive operations
+- Optimize loops and iterations
+- Use appropriate data structures
+
+## Database Performance
+- Use indexes effectively
+- Avoid SELECT * queries
+- Use pagination for large datasets
+- Monitor slow queries
+
+## Caching Strategy
+- Cache frequently accessed data
+- Use Redis for session storage
+- Implement cache invalidation
+- Monitor cache hit rates
+
+## Frontend Performance
+- Minimize JavaScript bundle size
+- Use lazy loading for components
+- Optimize images and assets
+- Implement proper error boundaries
+
+## Monitoring
+- Monitor application performance
+- Set up alerts for performance issues
+- Track key metrics
+- Regular performance reviews
