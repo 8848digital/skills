@@ -59,6 +59,10 @@ one found; none of them require deep reading.
   (patch). `a` (major) is a manual developer decision — never flag its
   absence. A schema-changing PR that leaves the version untouched is a
   missed bump, not a non-issue.
+- **New/renamed DocType names are singular and "Master"-free** — flag a
+  plural name (`Creatives`) or a "Master" prefix/suffix (`Customer Master`)
+  on any DocType this app owns — see `doctypes.md`'s Naming conventions
+  section.
 
 ---
 

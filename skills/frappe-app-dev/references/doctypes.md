@@ -58,6 +58,19 @@ Also create an empty `__init__.py` alongside the JSON:
 apps/<app>/<app>/<module>/doctype/<doctype_name>/__init__.py
 ```
 
+## Naming conventions (DocType's own name)
+
+These rules govern the DocType's own `name`/label — not the `autoname`
+pattern used for its records (see Naming patterns below).
+
+- **Singular, not plural.** `Creative`, not `Creatives`; `Expense Item`, not
+  `Expense Items` — consistent with core Frappe/ERPNext DocType naming
+  (`Customer`, `Sales Order`, `Item`).
+- **No "Master" prefix or suffix.** Every Frappe DocType is inherently a
+  master data record, so prepending/appending the word is redundant and
+  inconsistent with core naming — use `Customer`, not `Customer Master` or
+  `Master Customer`.
+
 ## Common field types
 
 | fieldtype | Use for |
