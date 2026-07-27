@@ -32,7 +32,10 @@ bench set-config -g developer_mode 1
 
 See [site-management.md](./site-management.md) for finding or creating a site.
 
-Complete this step before proceeding. You need a working site first.
+Complete this step before proceeding. You need a working site first. Also
+check the site has the mandatory foundation apps installed (`8848_frappe_core`,
+`iga_8848`) per that file's "Mandatory foundation apps" section — flag it
+to the user if either is missing, don't silently proceed.
 
 ## Step 4: Create app
 

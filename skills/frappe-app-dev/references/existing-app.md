@@ -70,6 +70,11 @@ If not installed:
 bench --site <site> install-app <app-name>
 ```
 
+While checking `list-apps`, also confirm the mandatory foundation apps
+(`8848_frappe_core`, `iga_8848`) are present — see site-management.md's
+"Mandatory foundation apps" section. Flag it to the user if either is
+missing rather than silently proceeding.
+
 ## Step 4: Enable developer mode
 
 ```bash

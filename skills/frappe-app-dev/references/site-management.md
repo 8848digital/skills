@@ -8,6 +8,27 @@ ls sites/
 
 Ignore these entries: `assets`, `apps.txt`, `common_site_config.json`, `currentsite.txt`. Everything else is a site directory.
 
+## Mandatory foundation apps
+
+Every 8848 site is expected to have these foundation apps installed,
+regardless of which custom app is being worked on:
+
+- `8848_frappe_core`
+- `iga_8848`
+
+Whenever a site is selected or confirmed (new site, existing site, or
+switching sites mid-task), check both are present:
+
+```bash
+bench --site <site> list-apps
+```
+
+**If either is missing, raise a flag to the user — do not silently
+proceed and do not auto-install.** Installing an app changes the site's
+state; only install after the user confirms. Name the specific app(s)
+missing so the user can decide (e.g. install now, or proceed anyway if
+this is a throwaway/test site).
+
 ## Matching a site to an app
 
 Convention: site name often contains the app name (e.g. `gameplan.localhost` for app `gameplan`).
