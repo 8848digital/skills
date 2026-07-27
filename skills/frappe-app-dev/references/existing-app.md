@@ -89,6 +89,9 @@ ls apps/<app-name>/README.md apps/<app-name>/license.txt apps/<app-name>/SETUP.m
   happen incrementally, but the file should exist.
 - **Missing `SETUP.md`** — only add it if the app has an existing
   integration or Settings DocType with required fields; otherwise skip.
+- **Missing `<module_name>/README.md`** on a module this task touches —
+  add a minimal one per [module-readme.md](./module-readme.md) (title +
+  `## Purpose` at least) before proceeding.
 - Don't let a missing file block the actual task — create a minimal
   version and continue, rather than treating this as a blocker to raise
   with the user first.
@@ -107,7 +110,10 @@ Every function/method/class you add or modify needs a docstring (see
 the copyright header (see [licensing.md](./licensing.md)) if it doesn't
 already have one. If the change adds/removes a feature, integration, or
 user-facing DocType, update `README.md` (and `SETUP.md` for integrations)
-in the same change.
+in the same change. If the change adds, removes, or renames a DocType,
+report, workspace, customization, print format, web form, or dashboard
+within a module, update that module's `<module_name>/README.md` in the
+same change — see [module-readme.md](./module-readme.md).
 
 ## Step 7: Migrate and verify
 

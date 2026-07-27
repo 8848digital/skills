@@ -88,7 +88,10 @@ see `CLAUDE.md`'s `<module_name>` naming rule.
 4. Create the standard subdirectories under `<module_name>/` per `CLAUDE.md`'s
    tree — at minimum `api/v1/`, `doctype/`, `customization/` — as the task
    needs them. Don't pre-create folders the app has no use for yet.
-5. Re-run `bench --site <site> migrate` once after the rename to confirm
+5. Scaffold `<module_name>/README.md` per
+   [module-readme.md](./module-readme.md) — at minimum the title and
+   `## Purpose` section. Do this now, not as a follow-up.
+6. Re-run `bench --site <site> migrate` once after the rename to confirm
    nothing references the old module path.
 
 ## Step 6: Add mandatory project files
