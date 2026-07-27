@@ -206,7 +206,7 @@ directory around.
 │   │
 │   ├── commands/                      ← Custom `bench` CLI commands
 │   │   ├── __init__.py                ← registers `commands = [export_fixtures]`
-│   │   ├── export_fixtures.py         ← `8848-export-fixtures`, copied verbatim from project_base_template/commands/
+│   │   ├── export_fixtures.py         ← `8848-export-fixtures`, copied verbatim from [`project_base_template/commands/`](https://github.com/8848digital/skills/tree/8848-skills/project_base_template/commands)
 │   │   └── README.md
 │   │
 │   ├── config/                        ← App-level config (desktop icons etc.)
@@ -283,7 +283,7 @@ module, never one shared copy at the app root.
 | `utils/` | App-wide utility package. Holds plain, non-whitelisted business logic and helpers shared across modules. The only top-level "generic helpers" location — there is no separate root `utils.py`. |
 | `utils/common.py` | Truly generic, cross-cutting helpers with no more specific home (e.g. Jinja method/filter targets for `hooks.py`'s `jinja` key). Prefer a more specific file/folder before adding here — see the `utils.py`/`utils/` anti-pattern below. |
 | `utils/api_handlers/` | Cross-cutting helpers **used by** whitelisted endpoints across every module's `api/` — centralised exception handling, pre-request guards, and the standard response-envelope helper. These files are never whitelisted themselves; they're imported by thin wrappers under `<module_name>/api/`. |
-| `commands/` | Custom `bench` CLI commands for this app. Copied verbatim from `project_base_template/commands/` at repo root — see that folder's `README.md` for setup and [bench-operations.md](./skills/frappe-app-dev/references/bench-operations.md) for usage. Ships the `8848-export-fixtures` command by default. |
+| `commands/` | Custom `bench` CLI commands for this app. Copied verbatim from [`project_base_template/commands/`](https://github.com/8848digital/skills/tree/8848-skills/project_base_template/commands) in the skills repo — see that folder's `README.md` for setup and [bench-operations.md](./skills/frappe-app-dev/references/bench-operations.md) for usage. Ships the `8848-export-fixtures` command by default. |
 | `config/` | App config (desktop icons, module config). |
 | `fixtures/` | Data exported via `fixtures` in `hooks.py`, synced across sites/environments. |
 | `public/js/` | Bundled client-side assets not tied to a single doctype form (global scripts, workflow actions). |
