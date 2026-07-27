@@ -52,6 +52,13 @@ one found; none of them require deep reading.
   `api/` outside `<module_name>/api/`, no `@frappe.whitelist()` outside
   `<module_name>/api/`, `customization/` (never `custom/`) used only for
   DocTypes owned elsewhere — see `CLAUDE.md`.
+- **Version bumped per CLAUDE.md's versioning rule** when the diff lands on
+  `develop`, `master`, or the default branch: bump `b` (minor) if the diff
+  includes a database change (new/altered DocType schema, or a
+  `patches.txt` migration that inserts/updates records); otherwise bump `c`
+  (patch). `a` (major) is a manual developer decision — never flag its
+  absence. A schema-changing PR that leaves the version untouched is a
+  missed bump, not a non-issue.
 
 ---
 
