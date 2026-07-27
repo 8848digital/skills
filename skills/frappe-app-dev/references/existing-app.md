@@ -79,7 +79,7 @@ bench set-config -g developer_mode 1
 ## Step 5: Check mandatory project files
 
 ```bash
-ls apps/<app-name>/README.md apps/<app-name>/license.txt apps/<app-name>/SETUP.md
+ls apps/<app-name>/README.md apps/<app-name>/license.txt apps/<app-name>/SETUP.md apps/<app-name>/REVIEW.md
 ```
 
 - **Missing `license.txt`** — add it now, verbatim, per
@@ -89,6 +89,9 @@ ls apps/<app-name>/README.md apps/<app-name>/license.txt apps/<app-name>/SETUP.m
   happen incrementally, but the file should exist.
 - **Missing `SETUP.md`** — only add it if the app has an existing
   integration or Settings DocType with required fields; otherwise skip.
+- **Missing `REVIEW.md`** — add it now per [review.md](./review.md), even
+  if it starts as a single `Critical Invariants` bullet — this is
+  non-negotiable, unlike `SETUP.md`.
 - **Missing `<module_name>/README.md`** on a module this task touches —
   add a minimal one per [module-readme.md](./module-readme.md) (title +
   `## Purpose` at least) before proceeding.
@@ -118,7 +121,10 @@ user-facing DocType, update `README.md` (and `SETUP.md` for integrations)
 in the same change. If the change adds, removes, or renames a DocType,
 report, workspace, customization, print format, web form, or dashboard
 within a module, update that module's `<module_name>/README.md` in the
-same change — see [module-readme.md](./module-readme.md).
+same change — see [module-readme.md](./module-readme.md). If the change
+introduces a new critical invariant, high-risk area, or fixes a bug that
+was a known footgun, update `REVIEW.md` in the same change — see
+[review.md](./review.md).
 
 ## Step 7: Migrate and verify
 

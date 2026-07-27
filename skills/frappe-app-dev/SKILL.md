@@ -26,8 +26,8 @@ description: >-
 - Every function/method/class written in this app needs a docstring (see `code-style` SKILL.md), and every `.py`/`.js`/`.md` file needs the copyright header (see [licensing.md](./references/licensing.md)) — these apply regardless of which feature reference below is in play.
 - Before ending any task that created or modified files, run through
   `quality-code-review`'s §0 Project hygiene checklist (docstrings, copyright
-  headers, README/SETUP updates, structural conventions) — a lightweight
-  self-check, not the full review.
+  headers, README/SETUP/REVIEW updates, structural conventions) — a
+  lightweight self-check, not the full review.
 
 ## Flow Selection
 
@@ -62,6 +62,7 @@ Load ONLY the references needed for the current task:
 | Bench CLI        | All bench commands reference                 | [bench-operations.md](./references/bench-operations.md) |
 | README.md        | Writing/updating the app's functional README | [readme.md](./references/readme.md)                     |
 | SETUP.md         | Documenting integration/config requirements  | [setup.md](./references/setup.md)                       |
+| REVIEW.md        | Documenting an app's PR review checklist     | [review.md](./references/review.md)                     |
 | Licensing & file headers | Adding license.txt, per-file copyright headers | [licensing.md](./references/licensing.md)         |
 
 ## Important: Do NOT load all references at once. Read only what the current task requires.

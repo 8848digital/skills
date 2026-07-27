@@ -42,9 +42,9 @@ Each skill has a `SKILL.md` — read it before writing code for that topic.
 - Load `quality-code-review` when explicitly reviewing existing code, **and**
   always run its §0 Project hygiene checklist as a final pass before ending
   any task that created or modified files — docstrings, copyright headers,
-  README/SETUP updates, structural conventions. This is a quick self-check,
-  not a full §1–§8 review; only run the full checklist when the user actually
-  asks for a code review.
+  README/SETUP/REVIEW updates, structural conventions. This is a quick
+  self-check, not a full §1–§8 review; only run the full checklist when the
+  user actually asks for a code review.
 - Do **not** load all skills at once. Load only what the current task needs.
 
 ---
@@ -81,6 +81,7 @@ Then load only the feature references you need for the task:
 | README.md | Writing/updating the app's functional README | [readme.md](./skills/frappe-app-dev/references/readme.md) |
 | Module README.md | Creating/modifying anything inside a module (DocTypes, reports, workspaces, customizations, print formats, web forms, dashboards) | [module-readme.md](./skills/frappe-app-dev/references/module-readme.md) |
 | SETUP.md | Documenting integration/config requirements | [setup.md](./skills/frappe-app-dev/references/setup.md) |
+| REVIEW.md | Documenting an app's PR review checklist | [review.md](./skills/frappe-app-dev/references/review.md) |
 | Licensing & file headers | Adding license.txt, per-file copyright headers | [licensing.md](./skills/frappe-app-dev/references/licensing.md) |
 
 ---
@@ -247,6 +248,7 @@ directory around.
 ├── pyproject.toml                     ← PEP 517 build metadata
 ├── README.md                          ← Functional overview — see references/readme.md
 ├── SETUP.md                           ← Integration/config requirements — see references/setup.md (only if the app has integrations/settings; see rule below)
+├── REVIEW.md                          ← App-specific PR review checklist — see references/review.md
 └── license.txt                        ← Mandatory in every project — see references/licensing.md
 ````
 
@@ -297,6 +299,7 @@ module, never one shared copy at the app root.
 | `patches.txt` | Data migration patches run on `bench migrate`. |
 | `README.md` | Functional documentation of what the app does — see [readme.md](./skills/frappe-app-dev/references/readme.md). |
 | `SETUP.md` | Integration/configuration requirements — see [setup.md](./skills/frappe-app-dev/references/setup.md). Omit only if the app has zero external integrations and zero required settings. |
+| `REVIEW.md` | App-specific PR review checklist — see [review.md](./skills/frappe-app-dev/references/review.md). Mandatory in every app, even a one-line stub for a trivial app. |
 | `license.txt` | Mandatory in every repo, verbatim template — see [licensing.md](./skills/frappe-app-dev/references/licensing.md). |
 
 ### Key Conventions
@@ -328,6 +331,7 @@ module, never one shared copy at the app root.
 | **README.md** | Every app ships a functional `README.md` at repo root per [readme.md](./skills/frappe-app-dev/references/readme.md) — what the app does, not how it's structured. |
 | **`<module_name>/README.md`** | Every module ships its own `README.md` per [module-readme.md](./skills/frappe-app-dev/references/module-readme.md), scaffolded at module-creation time and kept in sync whenever a DocType, report, workspace, customization, print format, web form, or dashboard is added/removed/renamed within that module. |
 | **SETUP.md** | Every app with an external integration or a Settings-style DocType ships a `SETUP.md` at repo root per [setup.md](./skills/frappe-app-dev/references/setup.md), listing mandatory fields/credentials. |
+| **REVIEW.md** | Every app ships a `REVIEW.md` at repo root per [review.md](./skills/frappe-app-dev/references/review.md) — app-specific critical invariants, high-risk areas, and known footguns for PR reviewers. Supplements, never restates, the generic `quality-code-review` §0–§8 checklist. |
 | **license.txt** | Mandatory in every repo, verbatim, per [licensing.md](./skills/frappe-app-dev/references/licensing.md). |
 | **File headers** | Every `.py` and `.js` file (and `.md` docs) carries the copyright header from [licensing.md](./skills/frappe-app-dev/references/licensing.md). JSON files are exempt (no comment syntax). |
 
@@ -480,6 +484,12 @@ surface, not just one module's:
   external service (SMS, push, payment gateway, auth) or has a Settings
   DocType with required fields, document them in `SETUP.md` — see
   [setup.md](./skills/frappe-app-dev/references/setup.md).
+- **Don't ship an app without `REVIEW.md`.** Every app gets one, even a
+  trivial one-line stub — see [review.md](./skills/frappe-app-dev/references/review.md).
+- **Don't let `REVIEW.md` restate the generic `quality-code-review`
+  checklist.** It's for app-specific critical invariants, high-risk areas,
+  and known footguns only — docstrings/licensing/structural checks already
+  run automatically on every review.
 - **Don't scatter scheduler/permission-hook targets loose in the app-package
   root.** `hooks.py` targets for `scheduler_events`, `permission_query_conditions`,
   and `has_permission` live under `<module_name>/tasks.py` and
