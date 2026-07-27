@@ -91,10 +91,34 @@ All custom Frappe apps in this project follow the layout below.
 Replace `<app_name>` with the actual app name (snake_case).
 Replace `<module_name>` with the actual module name (snake_case). **`<module_name>` must never be the same string as `<app_name>`**, and **must be namespaced to/derived from `<app_name>`** (e.g. app `chances_erp` → module `chances_core`, not a bare `core`) — the module directory is a distinct, purposefully-named submodule of the app package, not a repeat of the app's own name. Frappe module names must be unique across every app installed on a site, so a bare, generic module name (`selling`, `core`, `utils`) risks colliding with a same-named module in a different installed app; namespacing to the app name avoids that.
 
+**An app has one or more `<module_name>` directories, not exactly one.** A
+small, single-purpose app may have just one. A larger app whose business
+logic naturally splits into distinct domains has multiple sibling
+`<module_name>` directories side by side under the app package, one per
+domain — each independently namespaced to `<app_name>` (e.g. `chances_core`,
+`chances_billing`, `chances_reporting`) and each named for what it does.
+This matches `modules.txt`: every module listed there gets its own
+`<module_name>/` directory. There is no single, app-wide `api/`/
+`customization/`/`doctype/`/etc. — **every `<module_name>` directory
+independently follows the full structure and rules below** (its own `api/`,
+its own `customization/`, its own `doctype/`, its own `README.md`, and so
+on). A whitelisted endpoint that belongs to the `chances_billing` module
+lives under `chances_billing/api/v1/`; one that belongs to `chances_core`
+lives under `chances_core/api/v1/` — never in a shared, app-root `api/`.
+
+**Do not create a catch-all module named after the app itself** (e.g. a
+`chances_erp/chances_erp/` directory inside the `chances_erp` app) as a
+default "everything else" bucket — that's exactly the
+`<module_name> != <app_name>` rule above, restated for the multi-module
+case. Every module directory should be purpose-named and namespaced to the
+app; if scaffolding (`bench new-app`) generates a default self-named module
+and nothing ends up using it, delete it rather than leaving an empty stray
+directory around.
+
 ````
 <app_name>/                            ← repo root
 ├── <app_name>/                        ← Python package (pip-installable)
-│   ├── <module_name>/                 ← Module directory (name MUST differ from <app_name>)
+│   ├── <module_name>/                 ← One of one-or-more module directories (name MUST differ from <app_name>, each namespaced to it)
 │   │   ├── api/                       ← ALL versioned public REST endpoints live here — and ONLY here
 │   │   │   ├── v1/
 │   │   │   │   ├── bank.py            ← Whitelisted endpoints for bank-related operations
@@ -167,6 +191,11 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 │   │   ├── README.md                  ← Module-level summary — see references/module-readme.md
 │   │   └── __init__.py
 │   │
+│   ├── <module_name_2>/               ← Sibling module — same internal structure as above,
+│   │   │                                 repeated for every module in modules.txt (its own
+│   │   │                                 api/, customization/, doctype/, README.md, etc.)
+│   │   └── ...
+│   │
 │   ├── utils/                         ← App-wide utility package (business logic + shared helpers, no whitelisted code)
 │   │   ├── __init__.py
 │   │   ├── common.py                  ← Truly generic, cross-cutting helpers (e.g. jinja method/filter targets) — the only app-root "catch-all", keep it small
@@ -233,6 +262,11 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 
 ### Directory Purposes
 
+Every row below prefixed `<module_name>/` applies **independently to each
+module directory** — a two-module app has two `api/` folders, two
+`doctype/` folders, two `README.md` files, and so on, one nested under each
+module, never one shared copy at the app root.
+
 | Directory | Purpose |
 | --------- | ------- |
 | `<module_name>/api/` | The **only** location for versioned, custom whitelisted endpoints not tied to a single DocType this app owns. See versioning pattern below. No `api/` folder or `api.py` file may exist anywhere else in the app. |
@@ -270,6 +304,7 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 | Area | Rule |
 | ---- | ---- |
 | **`<module_name>` naming** | The module directory must be named distinctly from `<app_name>`, and must be namespaced to/derived from `<app_name>` (e.g. `chances_core`, not `core`). Never reuse the app's own name as the module name, and never pick a bare generic name — Frappe module names must be unique across every app installed on a site, and an unnamespaced module name can collide with another app's module of the same name. |
+| **Number of modules** | An app has one or more `<module_name>` directories, as siblings under the app package — not necessarily exactly one. Split into multiple purpose-named, app-namespaced modules when the app has multiple distinct business domains (e.g. `chances_core`, `chances_billing`); each module independently follows every other rule in this table (its own `api/`, its own `customization/`, its own `README.md`, etc.). |
 | **DocType naming** | A custom DocType's own name must be singular (`Creative`, not `Creatives`) and must never use "Master" as a prefix or suffix (`Customer`, not `Customer Master`) — see [doctypes.md](./skills/frappe-app-dev/references/doctypes.md#naming-conventions-doctypes-own-name). |
 | **Customization folder naming** | The folder for extending/overriding standard ERPNext/Frappe documents functionality must be named `customization/`. Never name it `custom/` or any other variant. |
 | **API location** | All whitelisted endpoint code — `api.py` files, `api/` folders, and versioned endpoint files — lives **only** under `<module_name>/api/`. It must never appear inside `doctype/`, `customization/`, or as a standalone folder anywhere else in the app. Non-whitelisted helper code that supports the API layer (error handling, pre-request guards, response formatting) is not itself endpoint code and lives in `utils/api_handlers/` instead — see below. This includes `hooks.py`'s `override_whitelisted_methods` targets — the override function is itself whitelisted and lives under `<module_name>/api/`, same as any other endpoint. |
@@ -426,6 +461,11 @@ surface, not just one module's:
   different app installed on the same site (Frappe module names must be
   unique site-wide). Namespace it to the app instead, e.g. `chances_core`
   rather than `core`.
+- **Don't leave a stray, unused default module around.** `bench new-app`
+  scaffolds a module named after the app itself; if the app grows into
+  multiple purpose-named modules instead (the normal case — see "Number of
+  modules" above) and nothing ends up in that default module, delete it
+  rather than leaving an empty directory that duplicates the app's own name.
 - **Don't use `custom/` as a folder name.** The folder for extending or
   overriding standard ERPNext/Frappe documents functionality must always be
   named `customization/` — never `custom/` or any other shortened variant.
