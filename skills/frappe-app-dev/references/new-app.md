@@ -73,7 +73,11 @@ see `CLAUDE.md`'s `<module_name>` naming rule.
 ## Step 5: Restructure module directory to convention
 
 1. Ask the user for the intended `<module_name>` (must differ from
-   `<app_name>` — e.g. app `chances_erp`, module `chances_core`).
+   `<app_name>` **and** be namespaced to/derived from it — e.g. app
+   `chances_erp`, module `chances_core`, not a bare `core`. Frappe module
+   names must be unique across every app installed on a site, so a
+   generic, unnamespaced name risks colliding with another app's module —
+   see `CLAUDE.md`'s `<module_name>` naming rule).
 2. Rename the scaffolded module directory:
 ```bash
    git -C apps/<app-name> mv <app-name>/<app-name> <app-name>/<module-name>

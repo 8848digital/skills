@@ -44,10 +44,17 @@ ls apps/<app-name>/<app-name>/<module-name>/
 
 Do NOT create a second app. Do NOT run `bench new-app`.
 
-If the module directory is still named the same as the app (an older app
-predating the `<module_name> != <app_name>` convention), do not silently
-rename it mid-task — that's a breaking change to every import path. Flag it
-to the user and treat renaming as its own separate, deliberate change.
+If the module directory is still named the same as the app, or uses a bare,
+unnamespaced name (older app predating the current `<module_name>` naming
+rule in `CLAUDE.md` — must differ from `<app_name>` **and** be namespaced
+to/derived from it, e.g. `chances_core` not `core`), do not silently rename
+it mid-task — that's a breaking change to every import path. Flag it to the
+user and treat renaming as its own separate, deliberate change.
+
+If the task involves adding a **new** module to this app, apply the same
+naming rule: namespace the new module name to `<app_name>` (e.g.
+`chances_billing`, not `billing`) so it can't collide with a same-named
+module from a different app installed on the same site.
 
 ## Step 3: Confirm site and app installation
 

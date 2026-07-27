@@ -88,7 +88,7 @@ Then load only the feature references you need for the task:
 
 All custom Frappe apps in this project follow the layout below.
 Replace `<app_name>` with the actual app name (snake_case).
-Replace `<module_name>` with the actual module name (snake_case). **`<module_name>` must never be the same string as `<app_name>`** — the module directory is a distinct, purposefully-named submodule of the app package, not a repeat of the app's own name.
+Replace `<module_name>` with the actual module name (snake_case). **`<module_name>` must never be the same string as `<app_name>`**, and **must be namespaced to/derived from `<app_name>`** (e.g. app `chances_erp` → module `chances_core`, not a bare `core`) — the module directory is a distinct, purposefully-named submodule of the app package, not a repeat of the app's own name. Frappe module names must be unique across every app installed on a site, so a bare, generic module name (`selling`, `core`, `utils`) risks colliding with a same-named module in a different installed app; namespacing to the app name avoids that.
 
 ````
 <app_name>/                            ← repo root
@@ -266,7 +266,7 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 
 | Area | Rule |
 | ---- | ---- |
-| **`<module_name>` naming** | The module directory must be named distinctly from `<app_name>`. Never reuse the app's own name as the module name. |
+| **`<module_name>` naming** | The module directory must be named distinctly from `<app_name>`, and must be namespaced to/derived from `<app_name>` (e.g. `chances_core`, not `core`). Never reuse the app's own name as the module name, and never pick a bare generic name — Frappe module names must be unique across every app installed on a site, and an unnamespaced module name can collide with another app's module of the same name. |
 | **Customization folder naming** | The folder for extending/overriding standard ERPNext/Frappe documents functionality must be named `customization/`. Never name it `custom/` or any other variant. |
 | **API location** | All whitelisted endpoint code — `api.py` files, `api/` folders, and versioned endpoint files — lives **only** under `<module_name>/api/`. It must never appear inside `doctype/`, `customization/`, or as a standalone folder anywhere else in the app. Non-whitelisted helper code that supports the API layer (error handling, pre-request guards, response formatting) is not itself endpoint code and lives in `utils/api_handlers/` instead — see below. This includes `hooks.py`'s `override_whitelisted_methods` targets — the override function is itself whitelisted and lives under `<module_name>/api/`, same as any other endpoint. |
 | **API support helpers location** | `error_messages.py`, `envelope.py`, and `response_formatter.py` (and any similar cross-cutting, non-whitelisted API helper) live in `utils/api_handlers/` at the app root — not inside any module's `api/` folder. This is a single shared location reused by every module's `api/vN/` endpoints in the app, so the response envelope and error handling stay identical across modules. |
@@ -414,6 +414,12 @@ surface, not just one module's:
   internally — see [api.md](./skills/frappe-app-dev/references/api.md).
 - **Don't name the module directory the same as the app.** `<module_name>`
   must be a distinct, meaningful name — never a repeat of `<app_name>`.
+- **Don't give the module a bare, generic name.** A module name like
+  `selling`, `core`, or `utils` satisfies "differs from `<app_name>`" but
+  isn't namespaced, so it can collide with a same-named module from a
+  different app installed on the same site (Frappe module names must be
+  unique site-wide). Namespace it to the app instead, e.g. `chances_core`
+  rather than `core`.
 - **Don't use `custom/` as a folder name.** The folder for extending or
   overriding standard ERPNext/Frappe documents functionality must always be
   named `customization/` — never `custom/` or any other shortened variant.
