@@ -79,6 +79,7 @@ Then load only the feature references you need for the task:
 | Frontend — Portal | Portal/website pages | [frontend-portal.md](./skills/frappe-app-dev/references/frontend-portal.md) |
 | Bench CLI | All bench commands reference | [bench-operations.md](./skills/frappe-app-dev/references/bench-operations.md) |
 | README.md | Writing/updating the app's functional README | [readme.md](./skills/frappe-app-dev/references/readme.md) |
+| Module README.md | Creating/modifying anything inside a module (DocTypes, reports, workspaces, customizations, print formats, web forms, dashboards) | [module-readme.md](./skills/frappe-app-dev/references/module-readme.md) |
 | SETUP.md | Documenting integration/config requirements | [setup.md](./skills/frappe-app-dev/references/setup.md) |
 | Licensing & file headers | Adding license.txt, per-file copyright headers | [licensing.md](./skills/frappe-app-dev/references/licensing.md) |
 
@@ -163,6 +164,7 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 │   │   │
 │   │   ├── tasks.py                   ← Background/scheduled job functions (frappe.enqueue, scheduler_events targets)
 │   │   ├── permissions.py             ← permission_query_conditions / has_permission hook functions (app-wide, not tied to one customization/<name>/)
+│   │   ├── README.md                  ← Module-level summary — see references/module-readme.md
 │   │   └── __init__.py
 │   │
 │   ├── utils/                         ← App-wide utility package (business logic + shared helpers, no whitelisted code)
@@ -243,6 +245,7 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 | `<module_name>/workspace/` | Desk workspace JSON. |
 | `<module_name>/tasks.py` | Functions targeted by `frappe.enqueue(...)` and `hooks.py`'s `scheduler_events`. Not tied to one DocType. If it grows past ~300 lines, split by feature (`tasks_billing.py`, etc.) rather than one giant file — see `background-jobs.md`. |
 | `<module_name>/permissions.py` | Functions targeted by `hooks.py`'s `permission_query_conditions` and `has_permission` for DocTypes not otherwise covered by a `customization/<name>/` file — see `permissions.md`. |
+| `<module_name>/README.md` | Short summary of what this module contains — DocTypes, reports, workspaces, customizations, print formats, web forms, dashboards — see [module-readme.md](./skills/frappe-app-dev/references/module-readme.md). |
 | `utils/` | App-wide utility package. Holds plain, non-whitelisted business logic and helpers shared across modules. The only top-level "generic helpers" location — there is no separate root `utils.py`. |
 | `utils/common.py` | Truly generic, cross-cutting helpers with no more specific home (e.g. Jinja method/filter targets for `hooks.py`'s `jinja` key). Prefer a more specific file/folder before adding here — see the `utils.py`/`utils/` anti-pattern below. |
 | `utils/api_handlers/` | Cross-cutting helpers **used by** whitelisted endpoints across every module's `api/` — centralised exception handling, pre-request guards, and the standard response-envelope helper. These files are never whitelisted themselves; they're imported by thin wrappers under `<module_name>/api/`. |
@@ -288,6 +291,7 @@ Replace `<module_name>` with the actual module name (snake_case). **`<module_nam
 | **Commit messages** | Follow Conventional Commits (enforced by `commitlint.config.js`). |
 | **Version bump policy** | App version follows `a.b.c` (in `pyproject.toml` / `<app_name>/__init__.py`'s `__version__`). `a` (major) is bumped manually, by the developer's own decision — never inferred automatically. `b` (minor) must be bumped whenever a change landing on `develop`, `master`, or the default branch includes a **database change** — creating/altering a table (new DocType, new/changed field with a schema effect) or a migration-driven insert/update of records (a patch in `patches.txt`). `c` (patch) is bumped for any other change with no database change (docs, refactors, non-schema logic fixes). |
 | **README.md** | Every app ships a functional `README.md` at repo root per [readme.md](./skills/frappe-app-dev/references/readme.md) — what the app does, not how it's structured. |
+| **`<module_name>/README.md`** | Every module ships its own `README.md` per [module-readme.md](./skills/frappe-app-dev/references/module-readme.md), scaffolded at module-creation time and kept in sync whenever a DocType, report, workspace, customization, print format, web form, or dashboard is added/removed/renamed within that module. |
 | **SETUP.md** | Every app with an external integration or a Settings-style DocType ships a `SETUP.md` at repo root per [setup.md](./skills/frappe-app-dev/references/setup.md), listing mandatory fields/credentials. |
 | **license.txt** | Mandatory in every repo, verbatim, per [licensing.md](./skills/frappe-app-dev/references/licensing.md). |
 | **File headers** | Every `.py` and `.js` file (and `.md` docs) carries the copyright header from [licensing.md](./skills/frappe-app-dev/references/licensing.md). JSON files are exempt (no comment syntax). |

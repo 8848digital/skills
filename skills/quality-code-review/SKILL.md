@@ -48,6 +48,12 @@ one found; none of them require deep reading.
   Settings-DocType field, webhook, or environment variable — see
   `frappe-app-dev/references/setup.md`. Never let a merged integration leave
   `SETUP.md` silently stale.
+- **`<module_name>/README.md` updated** if the PR adds, removes, or renames
+  a DocType, report, workspace, customization, print format, web form, or
+  dashboard within that module — see
+  `frappe-app-dev/references/module-readme.md`. A module missing its
+  `README.md` entirely (e.g. an older module predating this convention) is
+  also worth flagging.
 - **Structural conventions held**: `<module_name> != <app_name>`, no `api.py`/
   `api/` outside `<module_name>/api/`, no `@frappe.whitelist()` outside
   `<module_name>/api/`, `customization/` (never `custom/`) used only for
