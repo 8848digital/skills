@@ -193,9 +193,10 @@ commands = ["<app_name>.commands.export_fixtures.export_fixtures"]
 ````
 
 `commands/{__init__.py,export_fixtures.py,README.md}` are copied verbatim
-from `project_base_template/commands/` (repo root) — see that folder's
-`README.md` for setup, and [new-app.md](./new-app.md)/
-[existing-app.md](./existing-app.md) for when to add it.
+from [`project_base_template/commands/`](https://github.com/8848digital/skills/tree/8848-skills/project_base_template/commands)
+in the skills repo — see that folder's `README.md` for setup, and
+[new-app.md](./new-app.md)/[existing-app.md](./existing-app.md) for when to
+add it.
 
 Export: `bench --site <site> 8848-export-fixtures --app <app-name>`
 
