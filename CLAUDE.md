@@ -206,7 +206,7 @@ directory around.
 │   │
 │   ├── commands/                      ← Custom `bench` CLI commands
 │   │   ├── __init__.py                ← registers `commands = [export_fixtures]`
-│   │   ├── export_fixtures.py         ← `8848-export-fixtures`, copied verbatim from `project_base_template/commands/` (linked in Directory Purposes below)
+│   │   ├── export_fixtures.py         ← `8848-export-fixtures`, copied verbatim from [`project_base_template/commands/`](https://github.com/8848digital/skills/tree/8848-skills/project_base_template/commands)
 │   │   └── README.md
 │   │
 │   ├── config/                        ← App-level config (desktop icons etc.)
