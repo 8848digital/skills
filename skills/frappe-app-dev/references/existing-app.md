@@ -92,6 +92,11 @@ ls apps/<app-name>/README.md apps/<app-name>/license.txt apps/<app-name>/SETUP.m
 - **Missing `<module_name>/README.md`** on a module this task touches —
   add a minimal one per [module-readme.md](./module-readme.md) (title +
   `## Purpose` at least) before proceeding.
+- **Missing `<app_name>/commands/`** — add it now, copying `__init__.py`,
+  `export_fixtures.py`, and `README.md` verbatim from
+  `project_base_template/commands/` (repo root) and wiring `custom_fixtures`
+  + `commands` in `hooks.py` per that folder's `README.md` — see
+  [bench-operations.md](./bench-operations.md).
 - Don't let a missing file block the actual task — create a minimal
   version and continue, rather than treating this as a blocker to raise
   with the user first.

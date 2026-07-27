@@ -177,6 +177,28 @@ fixtures = [
 
 Export: `bench --site <site> export-fixtures --app <app-name>`
 
+### Custom fixtures — `8848-export-fixtures` command
+
+The built-in `fixtures` hook/`export-fixtures` command exports data as-is,
+with no cleanup. For fixtures that should stay small and diff-friendly
+(null/empty/zero-valued fields stripped), use the `custom_fixtures` hook
+instead, together with the `commands/` package's `8848-export-fixtures`
+bench command — see `CLAUDE.md`'s `commands/` entry and
+[bench-operations.md](./bench-operations.md).
+
+````python
+custom_fixtures = [{"dt": "Custom Field", "filters": {"module": "<Module Name>"}}]
+
+commands = ["<app_name>.commands.export_fixtures.export_fixtures"]
+````
+
+`commands/{__init__.py,export_fixtures.py,README.md}` are copied verbatim
+from `project_base_template/commands/` (repo root) — see that folder's
+`README.md` for setup, and [new-app.md](./new-app.md)/
+[existing-app.md](./existing-app.md) for when to add it.
+
+Export: `bench --site <site> 8848-export-fixtures --app <app-name>`
+
 ## Website routes
 
 ````python

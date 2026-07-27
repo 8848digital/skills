@@ -553,6 +553,53 @@ indent_size = 2
 
 ---
 
+### 4.7 App `commands/` (custom bench CLI)
+
+Every custom app ships a `commands/` package under the app Python package so
+agents and developers get the shared `8848-export-fixtures` bench command.
+
+**Step 1:** Create the destination folder (it may already exist empty from
+scaffolding):
+
+```bash
+mkdir -p apps/<app_name>/<app_name>/commands
+```
+
+**Step 2:** Copy the template files **verbatim** from this repo's
+`project_base_template/commands/` into that folder:
+
+```bash
+cp project_base_template/commands/__init__.py \
+   project_base_template/commands/export_fixtures.py \
+   project_base_template/commands/README.md \
+   apps/<app_name>/<app_name>/commands/
+```
+
+Final paths:
+
+```
+apps/<app_name>/<app_name>/commands/
+├── __init__.py
+├── export_fixtures.py
+└── README.md
+```
+
+**Step 3:** Add these lines to `apps/<app_name>/<app_name>/hooks.py` (near
+the top, after the `app_*` metadata). Replace `<app_name>` with the Python
+package name and `<Module Name>` with the exact value from `modules.txt`:
+
+```python
+custom_fixtures = [{"dt": "Custom Field", "filters": {"module": "<Module Name>"}}]
+
+commands = ["<app_name>.commands.export_fixtures.export_fixtures"]
+```
+
+> **Usage:** `bench --site <site> 8848-export-fixtures --app <app_name>`.
+> See `commands/README.md` for details. Export uses the `custom_fixtures`
+> hook (not the built-in `fixtures` hook).
+
+---
+
 ## 5. Set Up the GitHub Actions Workflow
 
 Now you need to set up a CI workflow in GitHub.
@@ -769,6 +816,10 @@ After completing all the steps above, your app's root directory should look like
 │   └── workflows/
 │       └── linters.yml
 ├── <app_name>/                  # main app source folder
+│   └── commands/                # copied from project_base_template/commands/
+│       ├── __init__.py
+│       ├── export_fixtures.py
+│       └── README.md
 ├── scripts/
 │   └── check_max_lines.py
 ├── .eslintrc
@@ -785,6 +836,7 @@ After completing all the steps above, your app's root directory should look like
 **Files/folders you created/added as part of this guide** (highlighted in the reference screenshot):
 - `.github/workflows/linters.yml`
 - `scripts/` folder (containing `check_max_lines.py`)
+- `<app_name>/commands/` (from `project_base_template/commands/`)
 - `.eslintrc`
 - `.flake8`
 - `.pre-commit-config.yaml`
@@ -808,5 +860,7 @@ After completing all the steps above, your app's root directory should look like
 | 8 | Create Python lint config | `.flake8` |
 | 9 | Create commit lint config | `commitlint.config.js` |
 | 10 | Create editor config | `.editorconfig` |
-| 11 | Set up GitHub Actions workflow | `.github/workflows/linters.yml` (choose new vs existing version) |
-| 12 | Verify structure | Compare against Section 6 |
+| 11 | Copy app `commands/` package | from `project_base_template/commands/` → `<app_name>/commands/` |
+| 12 | Wire `custom_fixtures` + `commands` in `hooks.py` | See Section 4.7 |
+| 13 | Set up GitHub Actions workflow | `.github/workflows/linters.yml` (choose new vs existing version) |
+| 14 | Verify structure | Compare against Section 6 |

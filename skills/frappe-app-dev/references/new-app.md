@@ -109,6 +109,11 @@ feature work is considered done:
   Settings DocType with required fields (ask the user if unsure). Create it
   once the first integration is added in Step 8, per
   [setup.md](./setup.md); skip entirely otherwise.
+- **`<app_name>/commands/`** — copy `__init__.py`, `export_fixtures.py`, and
+  `README.md` verbatim from `project_base_template/commands/` (repo root),
+  then wire `custom_fixtures` and `commands` in `hooks.py` per that folder's
+  `README.md`. Gives the app the `8848-export-fixtures` bench command — see
+  [bench-operations.md](./bench-operations.md).
 - Add the copyright header (per [licensing.md](./licensing.md)) to every
   `.py`/`.js`/`.md` file created from this point on, including files
   generated in this workflow.

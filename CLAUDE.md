@@ -205,8 +205,8 @@ directory around.
 │   │       └── error_messages.py      
 │   │
 │   ├── commands/                      ← Custom `bench` CLI commands
-│   │   ├── __init__.py
-│   │   ├── export_fixtures.py
+│   │   ├── __init__.py                ← registers `commands = [export_fixtures]`
+│   │   ├── export_fixtures.py         ← `8848-export-fixtures`, copied verbatim from project_base_template/commands/
 │   │   └── README.md
 │   │
 │   ├── config/                        ← App-level config (desktop icons etc.)
@@ -283,7 +283,7 @@ module, never one shared copy at the app root.
 | `utils/` | App-wide utility package. Holds plain, non-whitelisted business logic and helpers shared across modules. The only top-level "generic helpers" location — there is no separate root `utils.py`. |
 | `utils/common.py` | Truly generic, cross-cutting helpers with no more specific home (e.g. Jinja method/filter targets for `hooks.py`'s `jinja` key). Prefer a more specific file/folder before adding here — see the `utils.py`/`utils/` anti-pattern below. |
 | `utils/api_handlers/` | Cross-cutting helpers **used by** whitelisted endpoints across every module's `api/` — centralised exception handling, pre-request guards, and the standard response-envelope helper. These files are never whitelisted themselves; they're imported by thin wrappers under `<module_name>/api/`. |
-| `commands/` | Custom `bench` CLI commands for this app. |
+| `commands/` | Custom `bench` CLI commands for this app. Copied verbatim from `project_base_template/commands/` at repo root — see that folder's `README.md` for setup and [bench-operations.md](./skills/frappe-app-dev/references/bench-operations.md) for usage. Ships the `8848-export-fixtures` command by default. |
 | `config/` | App config (desktop icons, module config). |
 | `fixtures/` | Data exported via `fixtures` in `hooks.py`, synced across sites/environments. |
 | `public/js/` | Bundled client-side assets not tied to a single doctype form (global scripts, workflow actions). |
@@ -318,7 +318,7 @@ module, never one shared copy at the app root.
 | **Scheduler/background job targets** | `hooks.py`'s `scheduler_events` and any `frappe.enqueue(...)` dotted path point at `<module_name>/tasks.py` (or a feature-split file alongside it) — never at an app-root `tasks.py`/`setup.py`. |
 | **Permission hook targets** | `hooks.py`'s `permission_query_conditions` and `has_permission` point at `<module_name>/permissions.py` unless the DocType already has a `customization/<name>/` file, in which case it belongs there instead. |
 | **`utils/` is a package, not a file** | There is exactly one `utils` namespace per app: the `utils/` package. Never create a separate top-level `utils.py` alongside it — a package and a same-named module cannot coexist. Add new generic helpers to `utils/common.py`, and new files/subfolders under `utils/` for anything more specific. |
-| **Fixtures** | Keep fixture JSON files in `fixtures/`. Export via the custom `commands/export_fixtures.py` bench command. |
+| **Fixtures** | Keep fixture JSON files in `fixtures/`. Export via the custom `commands/export_fixtures.py` bench command (`bench --site <site> 8848-export-fixtures`), which reads the `custom_fixtures` hook — not Frappe's built-in `fixtures` hook/`export-fixtures` command — and strips null/empty/zero-valued fields. See [bench-operations.md](./skills/frappe-app-dev/references/bench-operations.md). |
 | **Public JS bundles** | `public/js/<app_name>.bundle.js` is the Webpack entry point. Additional form scripts go in the appropriate `doctype/` or `customization/` folder, **not** in `public/js/`. |
 | **Print formats** | One sub-folder per format under `print_format/`. Each folder must contain `__init__.py` + the JSON definition. |
 | **Web forms** | One sub-folder per form under `web_form/`. Each folder must contain `__init__.py`, `.json`, `.py` (server script), and `.js` (client script). |
