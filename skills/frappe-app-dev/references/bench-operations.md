@@ -90,9 +90,8 @@ bench --site <site> export-fixtures --app <app-name>
 
 # Custom command: export fixtures defined in hooks.py's `custom_fixtures` hook,
 # stripping null/empty/zero-valued fields for smaller, diff-friendly JSON.
-# Ships as a copy-pasteable template at
-# https://github.com/8848digital/skills/tree/8848-skills/project_base_template/commands
-# — see that folder's README.md for setup, and CLAUDE.md's `commands/` entry
-# for where it fits in the app structure.
+# Ships as a copy-pasteable template at project_base_template/commands/ —
+# see that folder's README.md for setup, and CLAUDE.md's `commands/` entry
+# (linked there) for where it fits in the app structure.
 bench --site <site> 8848-export-fixtures --app <app-name>
 ````
