@@ -112,6 +112,11 @@ feature work is considered done:
   Settings DocType with required fields (ask the user if unsure). Create it
   once the first integration is added in Step 8, per
   [setup.md](./setup.md); skip entirely otherwise.
+- **`REVIEW.md`** — app-specific PR review checklist, per
+  [review.md](./review.md). Non-negotiable, no exceptions — create it now
+  with at least one `Critical Invariants` bullet (or an explicit "none yet"
+  note for a brand-new app), and keep it current as business logic and
+  known footguns are added in Step 8.
 - **`<app_name>/commands/`** — copy `__init__.py`, `export_fixtures.py`, and
   `README.md` verbatim from
   [`project_base_template/commands/`](https://github.com/8848digital/skills/tree/8848-skills/project_base_template/commands)
@@ -150,7 +155,10 @@ full API docstring format (see [api.md](./api.md)).
 Load the relevant feature references from the main SKILL.md table as needed.
 As features land, update `README.md`'s Key DocTypes/Features sections and,
 if an integration was added, `SETUP.md`'s credential table — in the same
-change, not as a follow-up.
+change, not as a follow-up. If a feature introduces a business rule that
+must never break (a critical invariant) or touches money/compliance/
+irreversible external calls (a high-risk area), add it to `REVIEW.md` in
+the same change — see [review.md](./review.md).
 
 ## Step 9: Migrate and verify
 

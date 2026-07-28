@@ -21,6 +21,12 @@ and **§2 Security** (spend most attention here) → **§3 Performance**, **§4
 Concurrency** (bugs invisible in a casual read) → **§5 Readability**, **§6 API
 design**, **§7 Testing**, **§8 Errors & observability**.
 
+**Before starting, read the app's `REVIEW.md`** (repo root) if it exists —
+see `frappe-app-dev/references/review.md`. It holds that app's own critical
+invariants, high-risk areas, and known footguns: business-domain knowledge
+no generic checklist below can substitute for. Apply its checks alongside
+§0–§8, not instead of them.
+
 ---
 
 ## 0. Project hygiene (fast, binary — check first)
@@ -54,6 +60,11 @@ one found; none of them require deep reading.
   `frappe-app-dev/references/module-readme.md`. A module missing its
   `README.md` entirely (e.g. an older module predating this convention) is
   also worth flagging.
+- **`REVIEW.md` exists and is current** — flag a missing `REVIEW.md`
+  outright (mandatory in every app, see
+  `frappe-app-dev/references/review.md`), and flag a PR that introduces a
+  new critical invariant, high-risk area, or fixes a known footgun without
+  adding a line for it.
 - **Structural conventions held**: `<module_name> != <app_name>`, no `api.py`/
   `api/` outside `<module_name>/api/`, no `@frappe.whitelist()` outside
   `<module_name>/api/`, `customization/` (never `custom/`) used only for
