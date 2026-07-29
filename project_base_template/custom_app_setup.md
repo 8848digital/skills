@@ -600,6 +600,98 @@ commands = ["<app_name>.commands.export_fixtures.export_fixtures"]
 
 ---
 
+### 4.8 CodeGraph (code intelligence index)
+
+CodeGraph builds a local, pre-computed knowledge graph (a SQLite index) of
+every symbol, edge, and file in the workspace, so agent tooling
+(`codegraph_explore` / `codegraph explore`) can answer "where is X defined"
+/ "what calls Y" in one call instead of grepping the whole repo. Set this up
+once per machine (the CLI) and once per app repo (the index).
+
+**Step 1:** Install the CodeGraph CLI globally (machine-wide, not per-app):
+
+```bash
+npm install -g @colbymchenry/codegraph
+```
+
+**Step 2:** From the app's repo root (`apps/<app_name>`), build the index:
+
+```bash
+codegraph install
+```
+
+This creates a `.codegraph/` directory at the repo root. Its presence is
+what tells agent tooling to prefer `codegraph_explore`/`codegraph explore`
+over grep/find/reading files for this repo.
+
+> **Note:** `.codegraph/` is a local, regenerable index, not source — add
+> `.codegraph/` to `.gitignore` rather than committing it.
+
+---
+
+### 4.9 App `utils/api_handlers/` (shared API response helpers)
+
+Per this repo's `CLAUDE.md` API conventions, every custom app centralizes
+its whitelisted-endpoint response shaping in exactly one place:
+`utils/api_handlers/` at the app root. It holds cross-cutting,
+**non-whitelisted** helpers — the standard response envelope, error-message
+cleanup, and the `after_request` formatter — reused by every module's
+`<module_name>/api/vN/` endpoints. It is never duplicated per module, and
+these files never live inside a module's `api/` folder itself.
+
+**Step 1:** Create the destination folders (the `utils/` package may
+already exist from earlier app work):
+
+```bash
+mkdir -p apps/<app_name>/<app_name>/utils/api_handlers
+touch apps/<app_name>/<app_name>/utils/__init__.py \
+      apps/<app_name>/<app_name>/utils/api_handlers/__init__.py
+```
+
+**Step 2:** Copy the template files **verbatim** from this repo's
+`project_base_template/api_handlers/` into that folder:
+
+```bash
+cp project_base_template/api_handlers/envelope.py \
+   project_base_template/api_handlers/error_messages.py \
+   project_base_template/api_handlers/response_formatter.py \
+   apps/<app_name>/<app_name>/utils/api_handlers/
+```
+
+Final paths:
+
+```
+apps/<app_name>/<app_name>/utils/
+├── __init__.py
+├── common.py                      # if/when you need generic app-wide helpers
+└── api_handlers/
+    ├── __init__.py
+    ├── envelope.py
+    ├── error_messages.py
+    └── response_formatter.py
+```
+
+**Step 3:** Replace `<app_name>` inside the three copied files (the
+`Wired in hooks.py:` line in `response_formatter.py`'s docstring and the
+`/api/method/<app_name>` path check) with the real Python package name.
+
+**Step 4:** Wire the `after_request` hook in
+`apps/<app_name>/<app_name>/hooks.py`:
+
+```python
+after_request = ["<app_name>.utils.api_handlers.response_formatter.format_frappe_response_to_custom"]
+```
+
+> **Usage:** import `api_response(...)` from
+> `<app_name>.utils.api_handlers.response_formatter` into any
+> `<module_name>/api/v1/*.py` file to shape a response — see
+> [api.md](../skills/frappe-app-dev/references/api.md). Never place
+> `envelope.py`, `error_messages.py`, or `response_formatter.py` inside a
+> module's `api/` folder — their home is always the app-root
+> `utils/api_handlers/`, shared across every module.
+
+---
+
 ## 5. Set Up the GitHub Actions Workflow
 
 Now you need to set up a CI workflow in GitHub.
@@ -815,11 +907,19 @@ After completing all the steps above, your app's root directory should look like
 ├── .github/
 │   └── workflows/
 │       └── linters.yml
+├── .codegraph/                   # local index built by `codegraph install` (gitignored)
 ├── <app_name>/                  # main app source folder
-│   └── commands/                # copied from project_base_template/commands/
+│   ├── commands/                # copied from project_base_template/commands/
+│   │   ├── __init__.py
+│   │   ├── export_fixtures.py
+│   │   └── README.md
+│   └── utils/
 │       ├── __init__.py
-│       ├── export_fixtures.py
-│       └── README.md
+│       └── api_handlers/        # copied from project_base_template/api_handlers/
+│           ├── __init__.py
+│           ├── envelope.py
+│           ├── error_messages.py
+│           └── response_formatter.py
 ├── scripts/
 │   └── check_max_lines.py
 ├── .eslintrc
@@ -837,6 +937,8 @@ After completing all the steps above, your app's root directory should look like
 - `.github/workflows/linters.yml`
 - `scripts/` folder (containing `check_max_lines.py`)
 - `<app_name>/commands/` (from `project_base_template/commands/`)
+- `<app_name>/utils/api_handlers/` (from `project_base_template/api_handlers/`)
+- `.codegraph/` (from `codegraph install`, gitignored)
 - `.eslintrc`
 - `.flake8`
 - `.pre-commit-config.yaml`
@@ -862,5 +964,8 @@ After completing all the steps above, your app's root directory should look like
 | 10 | Create editor config | `.editorconfig` |
 | 11 | Copy app `commands/` package | from `project_base_template/commands/` → `<app_name>/commands/` |
 | 12 | Wire `custom_fixtures` + `commands` in `hooks.py` | See Section 4.7 |
-| 13 | Set up GitHub Actions workflow | `.github/workflows/linters.yml` (choose new vs existing version) |
-| 14 | Verify structure | Compare against Section 6 |
+| 13 | Install CodeGraph CLI + build index | `npm install -g @colbymchenry/codegraph` then `codegraph install` |
+| 14 | Copy app `utils/api_handlers/` package | from `project_base_template/api_handlers/` → `<app_name>/utils/api_handlers/` |
+| 15 | Wire `after_request` in `hooks.py` | See Section 4.9 |
+| 16 | Set up GitHub Actions workflow | `.github/workflows/linters.yml` (choose new vs existing version) |
+| 17 | Verify structure | Compare against Section 6 |
