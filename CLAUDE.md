@@ -16,23 +16,23 @@ SKILLS_ROOT = pathlib.Path(__file__).resolve().parent
 SKILLS_ROOT = pathlib.Path("CLAUDE.md").resolve().parent
 
 # Example: open a skill file
-skill_path = SKILLS_ROOT / "skills" / "frappe-app-dev" / "SKILL.md"
-ref_path   = SKILLS_ROOT / "skills" / "frappe-app-dev" / "references" / "new-app.md"
+skill_path = SKILLS_ROOT / ".claude" / "skills" / "frappe-app-dev" / "SKILL.md"
+ref_path   = SKILLS_ROOT / ".claude" / "skills" / "frappe-app-dev" / "references" / "new-app.md"
 ````
 
 ---
 
 ## Skills Overview
 
-Skills live under `skills/<name>/` relative to this repo root.
+Skills live under `.claude/skills/<name>/` relative to this repo root.
 Each skill has a `SKILL.md` — read it before writing code for that topic.
 
 | Skill | When to activate | Entry point |
 | ----- | ---------------- | ----------- |
-| `frappe-app-dev` | Creating/modifying DocTypes, controllers, APIs, hooks, permissions, background jobs, scheduler, bench CLI, site management, tests | [SKILL.md](./skills/frappe-app-dev/SKILL.md) |
-| `code-style` | Writing or reviewing any Python/JS code; questions about style, naming, line length, function size, helper ordering, docstrings | [SKILL.md](./skills/code-style/SKILL.md) |
-| `quality-code-review` | Performing code reviews, audits, or pull-request feedback | [SKILL.md](./skills/quality-code-review/SKILL.md) |
-| `ui-design` | Building Frappe Desk UI, Vue SPAs, portal pages, or any front-end component | [SKILL.md](./skills/ui-design/SKILL.md) |
+| `frappe-app-dev` | Creating/modifying DocTypes, controllers, APIs, hooks, permissions, background jobs, scheduler, bench CLI, site management, tests | [SKILL.md](./.claude/skills/frappe-app-dev/SKILL.md) |
+| `code-style` | Writing or reviewing any Python/JS code; questions about style, naming, line length, function size, helper ordering, docstrings | [SKILL.md](./.claude/skills/code-style/SKILL.md) |
+| `quality-code-review` | Performing code reviews, audits, or pull-request feedback | [SKILL.md](./.claude/skills/quality-code-review/SKILL.md) |
+| `ui-design` | Building Frappe Desk UI, Vue SPAs, portal pages, or any front-end component | [SKILL.md](./.claude/skills/ui-design/SKILL.md) |
 
 ### Activation Rules
 
@@ -51,37 +51,37 @@ Each skill has a `SKILL.md` — read it before writing code for that topic.
 
 ## frappe-app-dev — Flow Selection
 
-Once [SKILL.md](./skills/frappe-app-dev/SKILL.md) is loaded, pick exactly one flow:
+Once [SKILL.md](./.claude/skills/frappe-app-dev/SKILL.md) is loaded, pick exactly one flow:
 
 | Situation | Reference file |
 | --------- | -------------- |
-| Creating a new app | [new-app.md](./skills/frappe-app-dev/references/new-app.md) |
-| Working on an existing app | [existing-app.md](./skills/frappe-app-dev/references/existing-app.md) |
+| Creating a new app | [new-app.md](./.claude/skills/frappe-app-dev/references/new-app.md) |
+| Working on an existing app | [existing-app.md](./.claude/skills/frappe-app-dev/references/existing-app.md) |
 
 Then load only the feature references you need for the task:
 
 | Topic | When to load | Reference file |
 | ----- | ------------ | -------------- |
-| Site management | Finding/creating/managing sites | [site-management.md](./skills/frappe-app-dev/references/site-management.md) |
-| DocTypes | Creating/modifying DocTypes, fields, naming | [doctypes.md](./skills/frappe-app-dev/references/doctypes.md) |
-| Controllers | Document lifecycle, server logic | [controllers.md](./skills/frappe-app-dev/references/controllers.md) |
-| Whitelisted APIs | REST endpoints, `@frappe.whitelist()` | [api.md](./skills/frappe-app-dev/references/api.md) |
-| Database & ORM | `frappe.db`, queries, raw SQL | [database.md](./skills/frappe-app-dev/references/database.md) |
-| Caching | Redis, `frappe.cache` | [caching.md](./skills/frappe-app-dev/references/caching.md) |
-| Realtime | WebSocket, `publish_realtime` | [realtime.md](./skills/frappe-app-dev/references/realtime.md) |
-| Background jobs | `frappe.enqueue`, scheduled jobs | [background-jobs.md](./skills/frappe-app-dev/references/background-jobs.md) |
-| Hooks | `hooks.py` patterns | [hooks.md](./skills/frappe-app-dev/references/hooks.md) |
-| Permissions | Roles, DocType permissions, `has_permission` | [permissions.md](./skills/frappe-app-dev/references/permissions.md) |
-| Testing | Writing & running tests | [testing.md](./skills/frappe-app-dev/references/testing.md) |
-| Frontend & UI | Desk UI, Vue SPA, portal pages | [frontend.md](./skills/frappe-app-dev/references/frontend.md) (router → 3 sub-files) |
-| Frontend — Desk | Desk form/list customisation | [frontend-desk.md](./skills/frappe-app-dev/references/frontend-desk.md) |
-| Frontend — Vue | Vue SPA apps | [frontend-vue.md](./skills/frappe-app-dev/references/frontend-vue.md) |
-| Frontend — Portal | Portal/website pages | [frontend-portal.md](./skills/frappe-app-dev/references/frontend-portal.md) |
-| Bench CLI | All bench commands reference | [bench-operations.md](./skills/frappe-app-dev/references/bench-operations.md) |
-| README.md | Writing/updating the app's functional README | [readme.md](./skills/frappe-app-dev/references/readme.md) |
-| Module README.md | Creating/modifying anything inside a module (DocTypes, reports, workspaces, customizations, print formats, web forms, dashboards) | [module-readme.md](./skills/frappe-app-dev/references/module-readme.md) |
-| SETUP.md | Documenting integration/config requirements | [setup.md](./skills/frappe-app-dev/references/setup.md) |
-| Licensing & file headers | Adding license.txt, per-file copyright headers | [licensing.md](./skills/frappe-app-dev/references/licensing.md) |
+| Site management | Finding/creating/managing sites | [site-management.md](./.claude/skills/frappe-app-dev/references/site-management.md) |
+| DocTypes | Creating/modifying DocTypes, fields, naming | [doctypes.md](./.claude/skills/frappe-app-dev/references/doctypes.md) |
+| Controllers | Document lifecycle, server logic | [controllers.md](./.claude/skills/frappe-app-dev/references/controllers.md) |
+| Whitelisted APIs | REST endpoints, `@frappe.whitelist()` | [api.md](./.claude/skills/frappe-app-dev/references/api.md) |
+| Database & ORM | `frappe.db`, queries, raw SQL | [database.md](./.claude/skills/frappe-app-dev/references/database.md) |
+| Caching | Redis, `frappe.cache` | [caching.md](./.claude/skills/frappe-app-dev/references/caching.md) |
+| Realtime | WebSocket, `publish_realtime` | [realtime.md](./.claude/skills/frappe-app-dev/references/realtime.md) |
+| Background jobs | `frappe.enqueue`, scheduled jobs | [background-jobs.md](./.claude/skills/frappe-app-dev/references/background-jobs.md) |
+| Hooks | `hooks.py` patterns | [hooks.md](./.claude/skills/frappe-app-dev/references/hooks.md) |
+| Permissions | Roles, DocType permissions, `has_permission` | [permissions.md](./.claude/skills/frappe-app-dev/references/permissions.md) |
+| Testing | Writing & running tests | [testing.md](./.claude/skills/frappe-app-dev/references/testing.md) |
+| Frontend & UI | Desk UI, Vue SPA, portal pages | [frontend.md](./.claude/skills/frappe-app-dev/references/frontend.md) (router → 3 sub-files) |
+| Frontend — Desk | Desk form/list customisation | [frontend-desk.md](./.claude/skills/frappe-app-dev/references/frontend-desk.md) |
+| Frontend — Vue | Vue SPA apps | [frontend-vue.md](./.claude/skills/frappe-app-dev/references/frontend-vue.md) |
+| Frontend — Portal | Portal/website pages | [frontend-portal.md](./.claude/skills/frappe-app-dev/references/frontend-portal.md) |
+| Bench CLI | All bench commands reference | [bench-operations.md](./.claude/skills/frappe-app-dev/references/bench-operations.md) |
+| README.md | Writing/updating the app's functional README | [readme.md](./.claude/skills/frappe-app-dev/references/readme.md) |
+| Module README.md | Creating/modifying anything inside a module (DocTypes, reports, workspaces, customizations, print formats, web forms, dashboards) | [module-readme.md](./.claude/skills/frappe-app-dev/references/module-readme.md) |
+| SETUP.md | Documenting integration/config requirements | [setup.md](./.claude/skills/frappe-app-dev/references/setup.md) |
+| Licensing & file headers | Adding license.txt, per-file copyright headers | [licensing.md](./.claude/skills/frappe-app-dev/references/licensing.md) |
 
 ---
 
@@ -279,11 +279,11 @@ module, never one shared copy at the app root.
 | `<module_name>/workspace/` | Desk workspace JSON. |
 | `<module_name>/tasks.py` | Functions targeted by `frappe.enqueue(...)` and `hooks.py`'s `scheduler_events`. Not tied to one DocType. If it grows past ~300 lines, split by feature (`tasks_billing.py`, etc.) rather than one giant file — see `background-jobs.md`. |
 | `<module_name>/permissions.py` | Functions targeted by `hooks.py`'s `permission_query_conditions` and `has_permission` for DocTypes not otherwise covered by a `customization/<name>/` file — see `permissions.md`. |
-| `<module_name>/README.md` | Short summary of what this module contains — DocTypes, reports, workspaces, customizations, print formats, web forms, dashboards — see [module-readme.md](./skills/frappe-app-dev/references/module-readme.md). |
+| `<module_name>/README.md` | Short summary of what this module contains — DocTypes, reports, workspaces, customizations, print formats, web forms, dashboards — see [module-readme.md](./.claude/skills/frappe-app-dev/references/module-readme.md). |
 | `utils/` | App-wide utility package. Holds plain, non-whitelisted business logic and helpers shared across modules. The only top-level "generic helpers" location — there is no separate root `utils.py`. |
 | `utils/common.py` | Truly generic, cross-cutting helpers with no more specific home (e.g. Jinja method/filter targets for `hooks.py`'s `jinja` key). Prefer a more specific file/folder before adding here — see the `utils.py`/`utils/` anti-pattern below. |
 | `utils/api_handlers/` | Cross-cutting helpers **used by** whitelisted endpoints across every module's `api/` — centralised exception handling, pre-request guards, and the standard response-envelope helper. These files are never whitelisted themselves; they're imported by thin wrappers under `<module_name>/api/`. |
-| `commands/` | Custom `bench` CLI commands for this app. Copied verbatim from [`project_base_template/commands/`](https://github.com/8848digital/skills/tree/8848-skills/project_base_template/commands) in the skills repo — see that folder's `README.md` for setup and [bench-operations.md](./skills/frappe-app-dev/references/bench-operations.md) for usage. Ships the `8848-export-fixtures` command by default. |
+| `commands/` | Custom `bench` CLI commands for this app. Copied verbatim from [`project_base_template/commands/`](https://github.com/8848digital/skills/tree/8848-skills/project_base_template/commands) in the skills repo — see that folder's `README.md` for setup and [bench-operations.md](./.claude/skills/frappe-app-dev/references/bench-operations.md) for usage. Ships the `8848-export-fixtures` command by default. |
 | `config/` | App config (desktop icons, module config). |
 | `fixtures/` | Data exported via `fixtures` in `hooks.py`, synced across sites/environments. |
 | `public/js/` | Bundled client-side assets not tied to a single doctype form (global scripts, workflow actions). |
@@ -295,9 +295,9 @@ module, never one shared copy at the app root.
 | `install.py` | `after_install`/`before_install` logic for `bench install-app`. Target of `hooks.py`'s `after_install`/`before_install`/`after_uninstall` keys. |
 | `modules.txt` | Registered module list — managed by Frappe, don't hand-edit casually. |
 | `patches.txt` | Data migration patches run on `bench migrate`. |
-| `README.md` | Functional documentation of what the app does — see [readme.md](./skills/frappe-app-dev/references/readme.md). |
-| `SETUP.md` | Integration/configuration requirements — see [setup.md](./skills/frappe-app-dev/references/setup.md). Omit only if the app has zero external integrations and zero required settings. |
-| `license.txt` | Mandatory in every repo, verbatim template — see [licensing.md](./skills/frappe-app-dev/references/licensing.md). |
+| `README.md` | Functional documentation of what the app does — see [readme.md](./.claude/skills/frappe-app-dev/references/readme.md). |
+| `SETUP.md` | Integration/configuration requirements — see [setup.md](./.claude/skills/frappe-app-dev/references/setup.md). Omit only if the app has zero external integrations and zero required settings. |
+| `license.txt` | Mandatory in every repo, verbatim template — see [licensing.md](./.claude/skills/frappe-app-dev/references/licensing.md). |
 
 ### Key Conventions
 
@@ -305,31 +305,31 @@ module, never one shared copy at the app root.
 | ---- | ---- |
 | **`<module_name>` naming** | The module directory must be named distinctly from `<app_name>`, and must be namespaced to/derived from `<app_name>` (e.g. `chances_core`, not `core`). Never reuse the app's own name as the module name, and never pick a bare generic name — Frappe module names must be unique across every app installed on a site, and an unnamespaced module name can collide with another app's module of the same name. |
 | **Number of modules** | An app has one or more `<module_name>` directories, as siblings under the app package — not necessarily exactly one. Split into multiple purpose-named, app-namespaced modules when the app has multiple distinct business domains (e.g. `chances_core`, `chances_billing`); each module independently follows every other rule in this table (its own `api/`, its own `customization/`, its own `README.md`, etc.). |
-| **DocType naming** | A custom DocType's own name must be singular (`Creative`, not `Creatives`) and must never use "Master" as a prefix or suffix (`Customer`, not `Customer Master`) — see [doctypes.md](./skills/frappe-app-dev/references/doctypes.md#naming-conventions-doctypes-own-name). |
+| **DocType naming** | A custom DocType's own name must be singular (`Creative`, not `Creatives`) and must never use "Master" as a prefix or suffix (`Customer`, not `Customer Master`) — see [doctypes.md](./.claude/skills/frappe-app-dev/references/doctypes.md#naming-conventions-doctypes-own-name). |
 | **Customization folder naming** | The folder for extending/overriding standard ERPNext/Frappe documents functionality must be named `customization/`. Never name it `custom/` or any other variant. |
 | **API location** | All whitelisted endpoint code — `api.py` files, `api/` folders, and versioned endpoint files — lives **only** under `<module_name>/api/`. It must never appear inside `doctype/`, `customization/`, or as a standalone folder anywhere else in the app. Non-whitelisted helper code that supports the API layer (error handling, pre-request guards, response formatting) is not itself endpoint code and lives in `utils/api_handlers/` instead — see below. This includes `hooks.py`'s `override_whitelisted_methods` targets — the override function is itself whitelisted and lives under `<module_name>/api/`, same as any other endpoint. |
 | **API support helpers location** | `error_messages.py`, `envelope.py`, and `response_formatter.py` (and any similar cross-cutting, non-whitelisted API helper) live in `utils/api_handlers/` at the app root — not inside any module's `api/` folder. This is a single shared location reused by every module's `api/vN/` endpoints in the app, so the response envelope and error handling stay identical across modules. |
 | **Whitelisting** | `@frappe.whitelist()` may only be used on functions inside `<module_name>/api/`. Never whitelist a method or function inside `doctype/<name>/<name>.py` or `customization/<name>/*.py` — controller and customization files hold plain, non-whitelisted logic; expose it via a thin wrapper in `<module_name>/api/`. |
 | **API versioning** | All public endpoints live under `<module_name>/api/v1/`. Never put versioned logic directly in the module root. |
-| **API docstrings** | Every `@frappe.whitelist()` function must have a docstring documenting a 2–3 line explanation, the endpoint path, HTTP method, parameters (name, type, required/optional, description), and the response format. Dotted paths use the `<app_name>.<module_name>` convention. See [api.md](./skills/frappe-app-dev/references/api.md) for the required template. |
-| **Docstrings — all functions** | Every custom function/method/class in the app — not just whitelisted endpoints — must have a docstring (explanation, parameters, return value). See [code-style SKILL.md](./skills/code-style/SKILL.md). |
+| **API docstrings** | Every `@frappe.whitelist()` function must have a docstring documenting a 2–3 line explanation, the endpoint path, HTTP method, parameters (name, type, required/optional, description), and the response format. Dotted paths use the `<app_name>.<module_name>` convention. See [api.md](./.claude/skills/frappe-app-dev/references/api.md) for the required template. |
+| **Docstrings — all functions** | Every custom function/method/class in the app — not just whitelisted endpoints — must have a docstring (explanation, parameters, return value). See [code-style SKILL.md](./.claude/skills/code-style/SKILL.md). |
 | **Customization vs DocType** | Use `customization/` to extend / override standard ERPNext/Frappe documents functionality. Use `doctype/` for net-new custom DocTypes only. Neither folder may contain API code. |
 | **`doc_events` wiring** | For a DocType **this app owns**, prefer controller class methods (`validate`, `on_submit`, etc. in `doctype/<name>/<name>.py`) over `hooks.py`'s `doc_events` — see `controllers.md`. Use `doc_events` mainly for DocTypes **owned by another app**, wired to functions in `customization/<name>/<name>.py` — see `hooks.md` and the `customization/` vs `doctype/` section below. A rare cross-cutting `doc_events` entry (e.g. `"*"` for all DocTypes) belongs in a module-root file named for what it does (e.g. `<module_name>/audit.py`), not stuffed into `tasks.py` or `permissions.py`. |
 | **Scheduler/background job targets** | `hooks.py`'s `scheduler_events` and any `frappe.enqueue(...)` dotted path point at `<module_name>/tasks.py` (or a feature-split file alongside it) — never at an app-root `tasks.py`/`setup.py`. |
 | **Permission hook targets** | `hooks.py`'s `permission_query_conditions` and `has_permission` point at `<module_name>/permissions.py` unless the DocType already has a `customization/<name>/` file, in which case it belongs there instead. |
 | **`utils/` is a package, not a file** | There is exactly one `utils` namespace per app: the `utils/` package. Never create a separate top-level `utils.py` alongside it — a package and a same-named module cannot coexist. Add new generic helpers to `utils/common.py`, and new files/subfolders under `utils/` for anything more specific. |
-| **Fixtures** | Keep fixture JSON files in `fixtures/`. Export via the custom `commands/export_fixtures.py` bench command (`bench --site <site> 8848-export-fixtures`), which reads the `custom_fixtures` hook — not Frappe's built-in `fixtures` hook/`export-fixtures` command — and strips null/empty/zero-valued fields. See [bench-operations.md](./skills/frappe-app-dev/references/bench-operations.md). |
+| **Fixtures** | Keep fixture JSON files in `fixtures/`. Export via the custom `commands/export_fixtures.py` bench command (`bench --site <site> 8848-export-fixtures`), which reads the `custom_fixtures` hook — not Frappe's built-in `fixtures` hook/`export-fixtures` command — and strips null/empty/zero-valued fields. See [bench-operations.md](./.claude/skills/frappe-app-dev/references/bench-operations.md). |
 | **Public JS bundles** | `public/js/<app_name>.bundle.js` is the Webpack entry point. Additional form scripts go in the appropriate `doctype/` or `customization/` folder, **not** in `public/js/`. |
 | **Print formats** | One sub-folder per format under `print_format/`. Each folder must contain `__init__.py` + the JSON definition. |
 | **Web forms** | One sub-folder per form under `web_form/`. Each folder must contain `__init__.py`, `.json`, `.py` (server script), and `.js` (client script). |
 | **Max line length** | Enforced by `scripts/check_max_lines.py`. Run it in CI and locally before committing. |
 | **Commit messages** | Follow Conventional Commits (enforced by `commitlint.config.js`). |
 | **Version bump policy** | App version follows `a.b.c` (in `pyproject.toml` / `<app_name>/__init__.py`'s `__version__`). `a` (major) is bumped manually, by the developer's own decision — never inferred automatically. `b` (minor) must be bumped whenever a change landing on `develop`, `master`, or the default branch includes a **database change** — creating/altering a table (new DocType, new/changed field with a schema effect) or a migration-driven insert/update of records (a patch in `patches.txt`). `c` (patch) is bumped for any other change with no database change (docs, refactors, non-schema logic fixes). |
-| **README.md** | Every app ships a functional `README.md` at repo root per [readme.md](./skills/frappe-app-dev/references/readme.md) — what the app does, not how it's structured. |
-| **`<module_name>/README.md`** | Every module ships its own `README.md` per [module-readme.md](./skills/frappe-app-dev/references/module-readme.md), scaffolded at module-creation time and kept in sync whenever a DocType, report, workspace, customization, print format, web form, or dashboard is added/removed/renamed within that module. |
-| **SETUP.md** | Every app with an external integration or a Settings-style DocType ships a `SETUP.md` at repo root per [setup.md](./skills/frappe-app-dev/references/setup.md), listing mandatory fields/credentials. |
-| **license.txt** | Mandatory in every repo, verbatim, per [licensing.md](./skills/frappe-app-dev/references/licensing.md). |
-| **File headers** | Every `.py` and `.js` file (and `.md` docs) carries the copyright header from [licensing.md](./skills/frappe-app-dev/references/licensing.md). JSON files are exempt (no comment syntax). |
+| **README.md** | Every app ships a functional `README.md` at repo root per [readme.md](./.claude/skills/frappe-app-dev/references/readme.md) — what the app does, not how it's structured. |
+| **`<module_name>/README.md`** | Every module ships its own `README.md` per [module-readme.md](./.claude/skills/frappe-app-dev/references/module-readme.md), scaffolded at module-creation time and kept in sync whenever a DocType, report, workspace, customization, print format, web form, or dashboard is added/removed/renamed within that module. |
+| **SETUP.md** | Every app with an external integration or a Settings-style DocType ships a `SETUP.md` at repo root per [setup.md](./.claude/skills/frappe-app-dev/references/setup.md), listing mandatory fields/credentials. |
+| **license.txt** | Mandatory in every repo, verbatim, per [licensing.md](./.claude/skills/frappe-app-dev/references/licensing.md). |
+| **File headers** | Every `.py` and `.js` file (and `.md` docs) carries the copyright header from [licensing.md](./.claude/skills/frappe-app-dev/references/licensing.md). JSON files are exempt (no comment syntax). |
 
 ---
 
@@ -452,7 +452,7 @@ surface, not just one module's:
   file.** A method like `approve()` on an `Expense` controller stays plain
   Python. If the client needs to call it, write a whitelisted wrapper under
   `<module_name>/api/` that loads the document and calls the method
-  internally — see [api.md](./skills/frappe-app-dev/references/api.md).
+  internally — see [api.md](./.claude/skills/frappe-app-dev/references/api.md).
 - **Don't name the module directory the same as the app.** `<module_name>`
   must be a distinct, meaningful name — never a repeat of `<app_name>`.
 - **Don't give the module a bare, generic name.** A module name like
@@ -471,15 +471,15 @@ surface, not just one module's:
   named `customization/` — never `custom/` or any other shortened variant.
 - **Don't write a function without a docstring.** This applies to every
   function/method/class in the app, not only whitelisted endpoints — see
-  [code-style SKILL.md](./skills/code-style/SKILL.md).
+  [code-style SKILL.md](./.claude/skills/code-style/SKILL.md).
 - **Don't ship a repo without `license.txt`.** Every project gets the
-  verbatim template from [licensing.md](./skills/frappe-app-dev/references/licensing.md), no exceptions.
+  verbatim template from [licensing.md](./.claude/skills/frappe-app-dev/references/licensing.md), no exceptions.
 - **Don't ship `.py`/`.js`/`.md` files without the copyright header.** See
-  [licensing.md](./skills/frappe-app-dev/references/licensing.md) for the exact block per file type. JSON files are the only exemption.
+  [licensing.md](./.claude/skills/frappe-app-dev/references/licensing.md) for the exact block per file type. JSON files are the only exemption.
 - **Don't ship an integration without `SETUP.md`.** If the app talks to an
   external service (SMS, push, payment gateway, auth) or has a Settings
   DocType with required fields, document them in `SETUP.md` — see
-  [setup.md](./skills/frappe-app-dev/references/setup.md).
+  [setup.md](./.claude/skills/frappe-app-dev/references/setup.md).
 - **Don't scatter scheduler/permission-hook targets loose in the app-package
   root.** `hooks.py` targets for `scheduler_events`, `permission_query_conditions`,
   and `has_permission` live under `<module_name>/tasks.py` and

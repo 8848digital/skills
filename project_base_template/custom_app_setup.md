@@ -558,6 +558,11 @@ indent_size = 2
 Every custom app ships a `commands/` package under the app Python package so
 agents and developers get the shared `8848-export-fixtures` bench command.
 
+> If you're already cloning this skills repo per Section 4.10 (for the
+> skills folder + `CLAUDE.md`), that same clone also has
+> `project_base_template/commands/` — grab it from there in one pass
+> instead of repeating Steps 1–2 below from a separate local checkout.
+
 **Step 1:** Create the destination folder (it may already exist empty from
 scaffolding):
 
@@ -639,6 +644,11 @@ cleanup, and the `after_request` formatter — reused by every module's
 `<module_name>/api/vN/` endpoints. It is never duplicated per module, and
 these files never live inside a module's `api/` folder itself.
 
+> If you're already cloning this skills repo per Section 4.10 (for the
+> skills folder + `CLAUDE.md`), that same clone also has
+> `project_base_template/api_handlers/` — grab it from there in one pass
+> instead of repeating Steps 1–2 below from a separate local checkout.
+
 **Step 1:** Create the destination folders (the `utils/` package may
 already exist from earlier app work):
 
@@ -685,10 +695,121 @@ after_request = ["<app_name>.utils.api_handlers.response_formatter.format_frappe
 > **Usage:** import `api_response(...)` from
 > `<app_name>.utils.api_handlers.response_formatter` into any
 > `<module_name>/api/v1/*.py` file to shape a response — see
-> [api.md](../skills/frappe-app-dev/references/api.md). Never place
+> [api.md](../.claude/skills/frappe-app-dev/references/api.md). Never place
 > `envelope.py`, `error_messages.py`, or `response_formatter.py` inside a
 > module's `api/` folder — their home is always the app-root
 > `utils/api_handlers/`, shared across every module.
+
+---
+
+### 4.10 Agent tooling & templates: Skills folder, `CLAUDE.md`, `commands/`, `utils/api_handlers/`
+
+So that Claude Code has these skills and conventions available when working
+**directly inside `apps/<app_name>`**, and the app has the shared bench
+command + API response helpers, pull four things out of this skills repo
+in **one clone** — and discard the rest (this repo's own `README.md`,
+`project_base_template/custom_app_setup.md`, etc. don't belong inside the
+app):
+
+| What | Goes where | Why |
+| ---- | ---------- | --- |
+| `.claude/skills/` (all four skills) | `apps/<app_name>/.claude/skills/` | Claude Code auto-discovers **project-scoped** skills only under `.claude/skills/<skill-name>/SKILL.md` — this is a fixed convention, not a preference. Since this skills repo already stores skills at that same path, it's a straight copy — no path rewriting needed. |
+| `CLAUDE.md` | `apps/<app_name>/CLAUDE.md` (app repo **root**) | `CLAUDE.md` is a standing-instructions file loaded at session start, not a skill — it must live at the repo root and **never** under `.claude/`. An app keeps exactly one `CLAUDE.md`; `.claude/` is Claude Code's tooling-config directory (skills, settings, agents), not a documentation location. Its links already point at `./.claude/skills/...`, which matches this destination exactly. |
+| `project_base_template/commands/` | `apps/<app_name>/<app_name>/commands/` | Shared `8848-export-fixtures` bench command — see Section 4.7 for the `hooks.py` wiring this still needs. |
+| `project_base_template/api_handlers/` | `apps/<app_name>/<app_name>/utils/api_handlers/` | Shared, non-whitelisted response-envelope/error helpers — see Section 4.9 for the `hooks.py` wiring and usage this still needs. |
+
+**Step 1:** Clone this skills repo into a scratch location — not inside the
+app:
+
+```bash
+git clone https://github.com/8848digital/skills.git /tmp/8848-skills
+```
+
+**Step 2:** Copy all four pieces into the app, at their respective
+destinations:
+
+```bash
+mkdir -p apps/<app_name>/.claude
+cp -r /tmp/8848-skills/.claude/skills apps/<app_name>/.claude/skills
+cp /tmp/8848-skills/CLAUDE.md apps/<app_name>/CLAUDE.md
+
+mkdir -p apps/<app_name>/<app_name>/commands
+cp /tmp/8848-skills/project_base_template/commands/__init__.py \
+   /tmp/8848-skills/project_base_template/commands/export_fixtures.py \
+   /tmp/8848-skills/project_base_template/commands/README.md \
+   apps/<app_name>/<app_name>/commands/
+
+mkdir -p apps/<app_name>/<app_name>/utils/api_handlers
+touch apps/<app_name>/<app_name>/utils/__init__.py \
+      apps/<app_name>/<app_name>/utils/api_handlers/__init__.py
+cp /tmp/8848-skills/project_base_template/api_handlers/envelope.py \
+   /tmp/8848-skills/project_base_template/api_handlers/error_messages.py \
+   /tmp/8848-skills/project_base_template/api_handlers/response_formatter.py \
+   apps/<app_name>/<app_name>/utils/api_handlers/
+```
+
+**Step 3:** Discard the scratch clone — nothing else from it is needed
+inside the app:
+
+```bash
+rm -rf /tmp/8848-skills
+```
+
+**Step 4:** Verify the copy landed at the right respective locations:
+
+```bash
+ls apps/<app_name>/.claude/skills/*/SKILL.md
+test -f apps/<app_name>/CLAUDE.md && echo "CLAUDE.md at repo root: OK"
+test ! -f apps/<app_name>/.claude/CLAUDE.md && echo "no stray .claude/CLAUDE.md: OK"
+ls apps/<app_name>/<app_name>/commands/
+ls apps/<app_name>/<app_name>/utils/api_handlers/
+```
+
+`CLAUDE.md`'s internal links already point at `./.claude/skills/...`, and
+the app's own `.claude/skills/` sits at that exact same relative position
+— so no link rewriting is needed here (unlike copying from an older
+checkout that still had skills at a bare `skills/`). Spot-check one link,
+e.g. open `.claude/skills/frappe-app-dev/SKILL.md` from
+`apps/<app_name>/CLAUDE.md`, to confirm it resolves.
+
+**Step 5:** `commands/` and `utils/api_handlers/` still each need their own
+`hooks.py` wiring (they're templates, not self-registering) — do the
+`<app_name>`/`<Module Name>` replacements and add the `custom_fixtures`,
+`commands`, and `after_request` hook entries per Section 4.7 Step 3 and
+Section 4.9 Steps 3–4.
+
+Final paths:
+
+```
+apps/<app_name>/
+├── .claude/
+│   └── skills/
+│       ├── frappe-app-dev/
+│       ├── code-style/
+│       ├── quality-code-review/
+│       └── ui-design/
+├── <app_name>/
+│   ├── commands/
+│   │   ├── __init__.py
+│   │   ├── export_fixtures.py
+│   │   └── README.md
+│   └── utils/
+│       ├── __init__.py
+│       └── api_handlers/
+│           ├── __init__.py
+│           ├── envelope.py
+│           ├── error_messages.py
+│           └── response_formatter.py
+└── CLAUDE.md
+```
+
+> **Note:** if the app repo already has a stray `.claude/CLAUDE.md` from
+> earlier scaffolding, don't leave both copies around — move its content
+> into the root `CLAUDE.md` from Step 2 and delete the duplicate.
+
+> **If you already did Section 4.7 and/or 4.9 from a local checkout**,
+> skip the matching copy commands above — don't fetch `commands/` or
+> `api_handlers/` twice from two different sources.
 
 ---
 
@@ -908,6 +1029,12 @@ After completing all the steps above, your app's root directory should look like
 │   └── workflows/
 │       └── linters.yml
 ├── .codegraph/                   # local index built by `codegraph install` (gitignored)
+├── .claude/
+│   └── skills/                   # copied from this skills repo's .claude/skills/
+│       ├── frappe-app-dev/
+│       ├── code-style/
+│       ├── quality-code-review/
+│       └── ui-design/
 ├── <app_name>/                  # main app source folder
 │   ├── commands/                # copied from project_base_template/commands/
 │   │   ├── __init__.py
@@ -927,6 +1054,7 @@ After completing all the steps above, your app's root directory should look like
 ├── .gitignore
 ├── .pre-commit-config.yaml
 ├── .editorconfig
+├── CLAUDE.md                     # copied verbatim from this skills repo's root
 ├── README.md
 ├── commitlint.config.js
 ├── license.txt
@@ -939,6 +1067,8 @@ After completing all the steps above, your app's root directory should look like
 - `<app_name>/commands/` (from `project_base_template/commands/`)
 - `<app_name>/utils/api_handlers/` (from `project_base_template/api_handlers/`)
 - `.codegraph/` (from `codegraph install`, gitignored)
+- `.claude/skills/` (from this skills repo's `.claude/skills/`)
+- `CLAUDE.md` (from this skills repo's root)
 - `.eslintrc`
 - `.flake8`
 - `.pre-commit-config.yaml`
@@ -967,5 +1097,7 @@ After completing all the steps above, your app's root directory should look like
 | 13 | Install CodeGraph CLI + build index | `npm install -g @colbymchenry/codegraph` then `codegraph install` |
 | 14 | Copy app `utils/api_handlers/` package | from `project_base_template/api_handlers/` → `<app_name>/utils/api_handlers/` |
 | 15 | Wire `after_request` in `hooks.py` | See Section 4.9 |
-| 16 | Set up GitHub Actions workflow | `.github/workflows/linters.yml` (choose new vs existing version) |
-| 17 | Verify structure | Compare against Section 6 |
+| 16 | Clone skills repo to scratch location | `git clone https://github.com/8848digital/skills.git /tmp/8848-skills` |
+| 17 | Copy `.claude/skills/`, `CLAUDE.md`, `commands/`, `utils/api_handlers/` into the app, discard the clone | See Section 4.10 (can replace rows 11 & 14 if not already done from a local checkout) |
+| 18 | Set up GitHub Actions workflow | `.github/workflows/linters.yml` (choose new vs existing version) |
+| 19 | Verify structure | Compare against Section 6 |
