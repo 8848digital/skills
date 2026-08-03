@@ -59,6 +59,7 @@ Load ONLY the references needed for the current task:
 | Permissions      | Roles, DocType permissions, `has_permission` | [permissions.md](./references/permissions.md)           |
 | Testing          | Writing & running tests                      | [testing.md](./references/testing.md)                   |
 | Frontend & UI    | Desk UI, Vue SPA, portal pages           | [frontend.md](./references/frontend.md) (router → 3 sub-files) |
+| Print formats    | Creating/customizing print formats, Print Designer | [print-format.md](./references/print-format.md) |
 | Bench CLI        | All bench commands reference                 | [bench-operations.md](./references/bench-operations.md) |
 | README.md        | Writing/updating the app's functional README | [readme.md](./references/readme.md)                     |
 | SETUP.md         | Documenting integration/config requirements  | [setup.md](./references/setup.md)                       |
