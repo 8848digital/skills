@@ -77,6 +77,7 @@ Then load only the feature references you need for the task:
 | Frontend — Desk | Desk form/list customisation | [frontend-desk.md](./.claude/skills/frappe-app-dev/references/frontend-desk.md) |
 | Frontend — Vue | Vue SPA apps | [frontend-vue.md](./.claude/skills/frappe-app-dev/references/frontend-vue.md) |
 | Frontend — Portal | Portal/website pages | [frontend-portal.md](./.claude/skills/frappe-app-dev/references/frontend-portal.md) |
+| Print formats | Creating/customizing print formats, Print Format Builder, Print Designer | [print-format.md](./.claude/skills/frappe-app-dev/references/print-format.md) |
 | Bench CLI | All bench commands reference | [bench-operations.md](./.claude/skills/frappe-app-dev/references/bench-operations.md) |
 | README.md | Writing/updating the app's functional README | [readme.md](./.claude/skills/frappe-app-dev/references/readme.md) |
 | Module README.md | Creating/modifying anything inside a module (DocTypes, reports, workspaces, customizations, print formats, web forms, dashboards) | [module-readme.md](./.claude/skills/frappe-app-dev/references/module-readme.md) |
