@@ -315,7 +315,8 @@ module, never one shared copy at the app root.
 | **API docstrings** | Every `@frappe.whitelist()` function must have a docstring documenting a 2–3 line explanation, the endpoint path, HTTP method, parameters (name, type, required/optional, description), and the response format. Dotted paths use the `<app_name>.<module_name>` convention. See [api.md](./.claude/skills/frappe-app-dev/references/api.md) for the required template. |
 | **Docstrings — all functions** | Every custom function/method/class in the app — not just whitelisted endpoints — must have a docstring (explanation, parameters, return value). See [code-style SKILL.md](./.claude/skills/code-style/SKILL.md). |
 | **Customization vs DocType** | Use `customization/` to extend / override standard ERPNext/Frappe documents functionality. Use `doctype/` for net-new custom DocTypes only. Neither folder may contain API code. |
-| **`doc_events` wiring** | For a DocType **this app owns**, prefer controller class methods (`validate`, `on_submit`, etc. in `doctype/<name>/<name>.py`) over `hooks.py`'s `doc_events` — see `controllers.md`. Use `doc_events` mainly for DocTypes **owned by another app**, wired to functions in `customization/<name>/<name>.py` — see `hooks.md` and the `customization/` vs `doctype/` section below. A rare cross-cutting `doc_events` entry (e.g. `"*"` for all DocTypes) belongs in a module-root file named for what it does (e.g. `<module_name>/audit.py`), not stuffed into `tasks.py` or `permissions.py`. |
+| **`doc_events` wiring** | For a DocType **this app owns**, prefer controller class methods (`validate`, `on_submit`, etc. in `doctype/<name>/<name>.py`) over `hooks.py`'s `doc_events` — see `controllers.md`. Use `doc_events` mainly for DocTypes **owned by another app**, wired to functions in `customization/<name>/<name>.py`, and only there — never scattered into other files — see `hooks.md` and the `customization/` vs `doctype/` section below. A rare cross-cutting `doc_events` entry (e.g. `"*"` for all DocTypes) belongs in a module-root file named for what it does (e.g. `<module_name>/audit.py`), not stuffed into `tasks.py` or `permissions.py`. |
+| **Hook files hold functions, not logic** | Both `doctype/<name>/<name>.py` (this app's controllers) and `customization/<name>/<name>.py` (`doc_events` targets for DocTypes owned elsewhere) contain only the hook methods/functions themselves — `validate`, `on_submit`, `on_update`, etc. — each delegating to a real implementation in a sibling file (`<name>_utils.py`, `utils.py`, or another feature-named file in the same folder). No business logic (queries, mutations, conditionals implementing behavior) is written inline in these files. See `controllers.md`'s "File structure: hooks vs. logic" and `hooks.md`'s "File structure: hooks vs. logic (customization)". |
 | **Scheduler/background job targets** | `hooks.py`'s `scheduler_events` and any `frappe.enqueue(...)` dotted path point at `<module_name>/tasks.py` (or a feature-split file alongside it) — never at an app-root `tasks.py`/`setup.py`. |
 | **Permission hook targets** | `hooks.py`'s `permission_query_conditions` and `has_permission` point at `<module_name>/permissions.py` unless the DocType already has a `customization/<name>/` file, in which case it belongs there instead. |
 | **`utils/` is a package, not a file** | There is exactly one `utils` namespace per app: the `utils/` package. Never create a separate top-level `utils.py` alongside it — a package and a same-named module cannot coexist. Add new generic helpers to `utils/common.py`, and new files/subfolders under `utils/` for anything more specific. |
@@ -433,6 +434,12 @@ surface, not just one module's:
 - **Don't write `Document`-style controller code in `customization/`.** You
   don't own that DocType's class — use `doc_events` hook functions instead
   of trying to subclass or monkey-patch the controller.
+- **Don't write business logic inline inside a hook method/function in
+  `doctype/<name>/<name>.py` or `customization/<name>/<name>.py`.** Both
+  files exist only to wire hooks (`validate`, `on_submit`, `on_update`,
+  etc.) to an implementation defined elsewhere — the hook body should be a
+  one-line call to a function in a sibling file, never the queries,
+  mutations, or conditionals that implement the behavior itself.
 - **Don't put repo tooling in `<app_name>/scripts/`.** Keep it at the
   repo-root `scripts/` so it's clearly excluded from what gets installed to
   a site.
