@@ -94,6 +94,36 @@ def log_creation(doc, method):
     ...
 ````
 
+## File structure: hooks vs. logic (customization)
+
+Same rule as `controllers.md`'s "hooks vs. logic" applies here:
+`customization/<name>/<name>.py` (and a `"*"` cross-cutting hook file like
+`audit.py`) holds only the `doc_events` hook function(s) — a thin function
+that delegates to a sibling file, never the business logic itself.
+
+````python
+# BAD — logic inline in the hook function
+def on_update(doc, method):
+    kyc = frappe.get_doc("Customer KYC", {"customer": doc.name})
+    kyc.status = "Verified" if doc.custom_kyc_score > 80 else "Pending"
+    kyc.save()
+````
+
+````python
+# GOOD — hook delegates to a sibling file
+from <app_name>.<module_name>.customization.customer.utils import sync_customer_kyc
+
+def on_update(doc, method):
+    sync_customer_kyc(doc)
+````
+
+Place the actual implementation in sibling files within the same
+`customization/<name>/` directory (e.g. `utils.py`, or a feature-named file
+like `customer_kyc.py`) — see `CLAUDE.md`'s tree for the `customer/` example
+(`customer.py`, `customer_kyc.py`, `social_media.py`, `utils.py`). This
+applies to every `doc_events` target shown above, including the `"*"`
+cross-cutting `audit.py` case.
+
 ## Scheduled jobs
 
 ````python
@@ -214,7 +244,10 @@ website_route_rules = [
 - Hook functions are dotted paths to importable Python functions.
 - `doc_events` on app-owned DocTypes → prefer controller class methods
   instead (see above).
-- `doc_events` on DocTypes owned elsewhere → `customization/<name>/<name>.py`.
+- `doc_events` on DocTypes owned elsewhere → `customization/<name>/<name>.py`,
+  and only there — never scattered into other files. That file holds the
+  hook function only, never the business logic itself — see "File structure:
+  hooks vs. logic (customization)" above.
 - `scheduler_events` / `frappe.enqueue` targets → `<module_name>/tasks.py`.
 - `permission_query_conditions` / `has_permission` targets →
   `<module_name>/permissions.py` (or `customization/<name>/` if the DocType
