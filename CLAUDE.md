@@ -440,6 +440,15 @@ surface, not just one module's:
   etc.) to an implementation defined elsewhere — the hook body should be a
   one-line call to a function in a sibling file, never the queries,
   mutations, or conditionals that implement the behavior itself.
+- **Don't invent a new standalone file named after the hook/event itself**
+  (e.g. `set_naming.py`, `autoname.py`, `naming.py`) for a `doc_events`
+  target. Every `doc_events` hook — including `before_naming` and
+  `autoname` — targets that DocType's own `<name>.py`
+  (`doctype/<name>/<name>.py` if this app owns it, `customization/<name>/<name>.py`
+  if it doesn't), same as `validate` or `on_update` would. If that file
+  already exists for the DocType, add the new hook function to it; only
+  create the file if it doesn't exist yet, and even then name it after the
+  DocType, never after the hook. See `hooks.md`'s "Naming hooks" example.
 - **Don't put repo tooling in `<app_name>/scripts/`.** Keep it at the
   repo-root `scripts/` so it's clearly excluded from what gets installed to
   a site.
