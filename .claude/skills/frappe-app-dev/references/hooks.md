@@ -94,6 +94,45 @@ def log_creation(doc, method):
     ...
 ````
 
+### Naming hooks (`before_naming`, `autoname`)
+
+`before_naming` and `autoname` are ordinary `doc_events` keys — no different
+from `on_update` or `after_insert`. They still target that DocType's own
+`<name>.py`, never a new file invented for the occasion:
+
+````python
+doc_events = {
+    "Sales Invoice": {
+        "autoname": "<app_name>.<module_name>.customization.sales_invoice.sales_invoice.autoname",
+    },
+}
+````
+
+````python
+# apps/<app_name>/<app_name>/<module_name>/customization/sales_invoice/sales_invoice.py
+from <app_name>.<module_name>.customization.sales_invoice.utils import build_invoice_name
+
+def autoname(doc, method):
+    """
+    Assign a custom naming series to the Sales Invoice before insert.
+
+    Parameters:
+        doc (Document, required): The Sales Invoice document being named.
+        method (str, required): The hook event name passed by Frappe.
+
+    Returns:
+        None
+    """
+    doc.name = build_invoice_name(doc)
+````
+
+If `customization/sales_invoice/sales_invoice.py` already exists for this
+DocType (e.g. it already wires `on_update`), add `autoname` as another
+function in that same file — don't create a second file such as
+`set_naming.py` or `autoname.py`. Same applies on the `doctype/<name>/<name>.py`
+side for a DocType this app owns: `autoname` is just another method on the
+existing `Document` subclass, not a reason to add a new file.
+
 ## File structure: hooks vs. logic (customization)
 
 Same rule as `controllers.md`'s "hooks vs. logic" applies here:
