@@ -239,6 +239,101 @@ Use `frappe.db.sql` only for queries `frappe.qb` cannot express (CTEs, window fu
   for exp in expenses:
       exp.category_label = cat_map.get(exp.category)
 ```
+
+### SOP: DB calls inside loops (read or write, single or nested)
+
+This is the single most common performance defect found in review — see the
+[quality-code-review](../../quality-code-review/SKILL.md) §3 checklist entry
+and the [`db_loop_scan` weekly org-wide scanner](https://github.com/8848digital/org-scans/tree/main/checks/db_loop_scan)
+(in the separate `org-scans` repo) that enforces it automatically across
+every Frappe app repo in the org. Treat it as a hard rule, not a style
+preference:
+
+**Rule:** if a `for`/`while` loop body contains `frappe.db.*`,
+`frappe.qb...run()`, `frappe.get_doc`, `frappe.get_all`, `frappe.get_list`,
+or `frappe.get_cached_doc` — stop and rewrite before merging. It doesn't
+matter whether the call reads or writes, or whether the loop is top-level
+or nested two/three levels deep inside another loop. Nesting only makes the
+blast radius worse (N × M round trips instead of N), it isn't what makes the
+pattern wrong — a single loop with one query per iteration is already the
+defect.
+
+**Why this keeps happening:** it's usually written incrementally — a
+correct single-record read/write gets wrapped in a loop later to "handle
+multiple rows" without anyone going back to batch it. Review every loop that
+was added around *existing* single-record DB code as a suspect, not just
+brand-new loops.
+
+**Real example seen in production** (two features, same root cause):
+
+```python
+# BAD — write-side N+1, nested two loops deep
+for grn_id, rows in grn_wise_items.items():                 # outer loop
+    result = frappe.db.sql("...", {"grn": grn_id}, as_dict=1)  # 1 query per outer iteration
+    for r in result:                                         # inner loop
+        frappe.db.set_value(                                 # 1 UPDATE per inner row
+            "Purchase Receipt Item", r["custom_purchase_receipt_item"],
+            "custom_putaway_qty", r["total_qty"]
+        )
+```
+
+```python
+# BAD — read + write N+1, three loops deep
+for grn_id, rows in grn_wise_items.items():
+    for row in rows:
+        item_wise_qty[row.custom_purchase_receipt_item] += row.qty
+    for pri_item, revert_qty in item_wise_qty.items():
+        current_qty = frappe.db.get_value(                  # SELECT per item
+            "Purchase Receipt Item", pri_item, "custom_putaway_qty"
+        ) or 0
+        frappe.db.set_value(                                 # UPDATE per item
+            "Purchase Receipt Item", pri_item, "custom_putaway_qty",
+            max(current_qty - revert_qty, 0), update_modified=False
+        )
+```
+
+**The fix for reads:** batch-fetch once before/outside the loop into a dict,
+look up by key inside the loop (see the `category_label` example above) —
+never call `frappe.db.get_value`/`get_all`/`get_list`/`get_doc` per
+iteration.
+
+**The fix for writes:** collect `{name: new_value}` pairs while iterating in
+memory, then issue **one** bulk UPDATE after the loop instead of one
+`frappe.db.set_value` per row. Use a `CASE WHEN` via `frappe.qb`, or raw SQL
+only if `frappe.qb` can't express it:
+
+```python
+# GOOD — single bulk UPDATE instead of N set_value calls
+from pypika import Case
+
+updates = {r["custom_purchase_receipt_item"]: r["total_qty"] for r in result}
+if updates:
+    PRI = frappe.qb.DocType("Purchase Receipt Item")
+    case = Case()
+    for name, qty in updates.items():
+        case = case.when(PRI.name == name, qty)
+    (
+        frappe.qb.update(PRI)
+        .set(PRI.custom_putaway_qty, case.else_(PRI.custom_putaway_qty))
+        .where(PRI.name.isin(list(updates.keys())))
+    ).run()
+```
+
+For the read-then-write revert case, fetch every needed `current_qty` in one
+`frappe.get_all(..., filters={"name": ["in", item_list]})` call, compute the
+new values in Python, then apply them with the same bulk-update pattern.
+
+**Checklist before merging any new/edited loop:**
+1. Does the loop body call anything starting with `frappe.db.`, `frappe.qb`,
+   `frappe.get_doc`, `frappe.get_all`, `frappe.get_list`, or
+   `frappe.get_cached_doc`? If yes, it must move outside the loop or become
+   a bulk operation — no exceptions for "just one extra query."
+2. Is there a second loop nested inside the first? If a DB call sits inside
+   *that*, the fix above is not optional — this is the highest-severity form
+   of the pattern (N × M queries).
+3. Can the whole loop be replaced by one `frappe.qb`/`frappe.get_all` call
+   with `filters=[["name", "in", [...]]]` plus in-memory `SUM`/grouping,
+   instead of looping at all?
 - **Use `frappe.db.delete` for bulk deletion when the DocType has no `on_trash`/`after_delete` hooks.** It runs a single DELETE query. Use `frappe.delete_doc` in a loop only when controller trash hooks need to fire.
 - **Don't reach for `frappe.get_doc` for read-only, multi-field fetches.** If you're not calling document methods or saving, use `frappe.db.get_value`/`get_all`/`get_list` instead — `get_doc` is heavier and triggers unnecessary permission/hook overhead.
 - **Batch-fetch related records instead of querying in a loop.** (see N+1 example above)

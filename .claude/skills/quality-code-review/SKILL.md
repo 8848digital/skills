@@ -189,8 +189,14 @@ perceive ~100ms).
   comments/versions/assignments need *all* those queries indexed; one unindexed
   query makes everything sluggish.
 - **No DB calls in loops.** "Don't write validations that call db in LOOPS." Flag
-  N+1 patterns. Cache stable values (UOM, docstatus, status) instead of
-  re-querying. This is acceptable in background jobs, but never in requests.
+  N+1 patterns — reads and writes, single loop or nested. Cache stable values
+  (UOM, docstatus, status) instead of re-querying. This is acceptable in
+  background jobs, but never in requests. Full SOP with bad/good examples:
+  `frappe-app-dev/references/database.md`'s "SOP: DB calls inside loops"; the
+  `db_loop_scan` check in the [`org-scans`](https://github.com/8848digital/org-scans)
+  repo catches this automatically, weekly, across every Frappe app repo in
+  the org, so treat a repeat finding there as a review process gap, not
+  just a one-off bug.
 - **The Remove → Reduce → Reuse ladder** for slow code you can't fix: remove it,
   invoke it less, or memoize. Pick the right cache scope (
   `@redis_cache`, `@request_cache`, `@site_cache` — the last balloons memory if
