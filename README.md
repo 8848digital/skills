@@ -10,17 +10,27 @@ A collection of agent skills for building [Frappe Framework](https://frappeframe
 | `code-style`          | General code style rules                                                                                                                                                                        |
 | `quality-code-review` | Performing code reviews, audits, or pull-request feedback                                                                                                                                       |
 | `ui-design`           | General UI/UX design principles                                                                                                                                                                 |
+| `fix-issue`           | Fix a GitHub issue in three steps: extract the facts, reproduce and fix with a test, then validate the fix in a separate context                                                               |
+| `deep-app-audit`      | Multi-agent audit of a Frappe app for security, correctness, and customization defects. Every candidate is verified, and the result is one report. User-invoked only: run `/deep-app-audit <app path>` |
+| `technical-writing`   | Write documentation, READMEs, commits, pull requests, and release notes in Simplified Technical English |
+| `draft-security-advisory` | Write a publication-ready GitHub Security Advisory (GHSA) from a vulnerability report. User-invoked only: run `/draft-security-advisory` |
+| `resolve-backport-conflicts` | Resolve the conflict markers that Mergify commits into a failed backport pull request. User-invoked only: run `/resolve-backport-conflicts <PR>` |
 
 ## Repo layout
 
 ```
 .
 ├── .claude/
-│   └── skills/                  # the four skills above, one folder each
+│   └── skills/                  # the skills above, one folder each
 │       ├── frappe-app-dev/
 │       ├── code-style/
 │       ├── quality-code-review/
-│       └── ui-design/
+│       ├── ui-design/
+│       ├── fix-issue/
+│       ├── deep-app-audit/
+│       ├── technical-writing/
+│       ├── draft-security-advisory/
+│       └── resolve-backport-conflicts/
 ├── CLAUDE.md                    # standing instructions — read at the start of every session
 └── project_base_template/       # templates used when scaffolding a new custom Frappe app
 ```
@@ -63,6 +73,10 @@ Once `.claude/skills/` and `CLAUDE.md` are in place in your app repo, each
 skill activates automatically when Claude Code matches a task to it —
 creating DocTypes, building a Vue SPA, or running `bench migrate`
 (`frappe-app-dev`); enforcing code style (`code-style`); reviewing a PR
-(`quality-code-review`); UI/UX judgment (`ui-design`). `CLAUDE.md`
+(`quality-code-review`); UI/UX judgment (`ui-design`); fixing a GitHub
+issue (`fix-issue`); writing docs or commit messages
+(`technical-writing`). `deep-app-audit`, `draft-security-advisory`, and
+`resolve-backport-conflicts` run only when you call them with their slash
+command. `CLAUDE.md`
 documents when each skill activates and the custom-app structure
 conventions referenced throughout them.
