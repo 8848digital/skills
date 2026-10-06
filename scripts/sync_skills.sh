@@ -184,7 +184,9 @@ sync_skills() {
 	# Mirror each upstream skill into the app, drop skills removed upstream,
 	# then write the manifest of synced skill names.
 	local dest="$TARGET/.claude/skills" skill name
-	local rsync_opts=(-a --delete --out-format="%n")
+	# Compare by content (-c), not by time: a fresh clone gives every file a
+	# new mtime, and -a would then copy and list every file on each run.
+	local rsync_opts=(-rlpc --delete --out-format="%n")
 	[[ $DRY_RUN -eq 1 ]] && rsync_opts+=(--dry-run)
 	echo "--- .claude/skills/"
 
