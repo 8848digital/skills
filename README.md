@@ -32,12 +32,16 @@ A collection of agent skills for building [Frappe Framework](https://frappeframe
 │       ├── draft-security-advisory/
 │       └── resolve-backport-conflicts/
 ├── CLAUDE.md                    # standing instructions — read at the start of every session
+├── SETUP.md                     # set up or update the skills in an app, with Claude Code prompts
 ├── project_base_template/       # templates used when scaffolding a new custom Frappe app
 └── scripts/
     └── sync_skills.sh           # update an app repo from this repo
 ```
 
 ## Install (into your own app repo)
+
+For the full guide, with a Claude Code prompt for each case (new app,
+existing app, update), see [SETUP.md](./SETUP.md).
 
 Claude Code auto-discovers project-scoped skills only under
 `.claude/skills/<skill-name>/SKILL.md` at your repo root, and loads
