@@ -84,5 +84,5 @@ Act on the findings and re-run the tests.
 ## 6. Report
 
 Four to six lines: the cause, the change, the test, the review outcome, anything
-unresolved. Commit only if asked; if you do, follow Conventional Commits for the message and
+unresolved. Commit only if asked; if you do, load `technical-writing` for the message and
 add no co-author trailer.

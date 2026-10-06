@@ -35,6 +35,9 @@ Each skill has a `SKILL.md` — read it before writing code for that topic.
 | `ui-design` | Building Frappe Desk UI, Vue SPAs, portal pages, or any front-end component | [SKILL.md](./.claude/skills/ui-design/SKILL.md) |
 | `fix-issue` | Fixing a reported GitHub issue end-to-end (facts → reproduce + fix → separate-context validation) | [SKILL.md](./.claude/skills/fix-issue/SKILL.md) |
 | `deep-app-audit` | Multi-agent security / correctness / customization audit of a whole Frappe app. User-invoked only: `/deep-app-audit <app path>` | [SKILL.md](./.claude/skills/deep-app-audit/SKILL.md) |
+| `technical-writing` | Writing docs, READMEs, commit messages, PR descriptions, plans, or release notes (Simplified Technical English) | [SKILL.md](./.claude/skills/technical-writing/SKILL.md) |
+| `draft-security-advisory` | Turning a vulnerability report into a GitHub Security Advisory. User-invoked only: `/draft-security-advisory` | [SKILL.md](./.claude/skills/draft-security-advisory/SKILL.md) |
+| `resolve-backport-conflicts` | Resolving conflict markers in a Mergify backport PR. User-invoked only: `/resolve-backport-conflicts <PR>` | [SKILL.md](./.claude/skills/resolve-backport-conflicts/SKILL.md) |
 
 ### Activation Rules
 
