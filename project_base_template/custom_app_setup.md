@@ -702,11 +702,11 @@ after_request = ["<app_name>.utils.api_handlers.response_formatter.format_frappe
 
 ---
 
-### 4.10 Agent tooling & templates: Skills folder, `CLAUDE.md`, `commands/`, `utils/api_handlers/`
+### 4.10 Agent tooling & templates: Skills folder, `CLAUDE.md`, `commands/`, `utils/api_handlers/`, `sync_skills.sh`
 
 So that Claude Code has these skills and conventions available when working
 **directly inside `apps/<app_name>`**, and the app has the shared bench
-command + API response helpers, pull four things out of this skills repo
+command + API response helpers, pull five things out of this skills repo
 in **one clone** — and discard the rest (this repo's own `README.md`,
 `project_base_template/custom_app_setup.md`, etc. don't belong inside the
 app):
@@ -717,6 +717,7 @@ app):
 | `CLAUDE.md` | `apps/<app_name>/CLAUDE.md` (app repo **root**) | `CLAUDE.md` is a standing-instructions file loaded at session start, not a skill — it must live at the repo root and **never** under `.claude/`. An app keeps exactly one `CLAUDE.md`; `.claude/` is Claude Code's tooling-config directory (skills, settings, agents), not a documentation location. Its links already point at `./.claude/skills/...`, which matches this destination exactly. |
 | `project_base_template/commands/` | `apps/<app_name>/<app_name>/commands/` | Shared `8848-export-fixtures` bench command — see Section 4.7 for the `hooks.py` wiring this still needs. |
 | `project_base_template/api_handlers/` | `apps/<app_name>/<app_name>/utils/api_handlers/` | Shared, non-whitelisted response-envelope/error helpers — see Section 4.9 for the `hooks.py` wiring and usage this still needs. |
+| `scripts/sync_skills.sh` | `apps/<app_name>/scripts/sync_skills.sh` | Updates the four items above in the app later, after this scratch clone is deleted. See "Keep the app up to date" below. |
 
 **Step 1:** Clone this skills repo into a scratch location — not inside the
 app:
@@ -725,7 +726,7 @@ app:
 git clone https://github.com/8848digital/skills.git /tmp/8848-skills
 ```
 
-**Step 2:** Copy all four pieces into the app, at their respective
+**Step 2:** Copy all five pieces into the app, at their respective
 destinations:
 
 ```bash
@@ -746,6 +747,10 @@ cp /tmp/8848-skills/project_base_template/api_handlers/envelope.py \
    /tmp/8848-skills/project_base_template/api_handlers/error_messages.py \
    /tmp/8848-skills/project_base_template/api_handlers/response_formatter.py \
    apps/<app_name>/<app_name>/utils/api_handlers/
+
+mkdir -p apps/<app_name>/scripts
+cp /tmp/8848-skills/scripts/sync_skills.sh apps/<app_name>/scripts/
+chmod +x apps/<app_name>/scripts/sync_skills.sh
 ```
 
 **Step 3:** Discard the scratch clone — nothing else from it is needed
@@ -763,6 +768,7 @@ test -f apps/<app_name>/CLAUDE.md && echo "CLAUDE.md at repo root: OK"
 test ! -f apps/<app_name>/.claude/CLAUDE.md && echo "no stray .claude/CLAUDE.md: OK"
 ls apps/<app_name>/<app_name>/commands/
 ls apps/<app_name>/<app_name>/utils/api_handlers/
+test -x apps/<app_name>/scripts/sync_skills.sh && echo "sync_skills.sh: OK"
 ```
 
 `CLAUDE.md`'s internal links already point at `./.claude/skills/...`, and
@@ -800,6 +806,8 @@ apps/<app_name>/
 │           ├── envelope.py
 │           ├── error_messages.py
 │           └── response_formatter.py
+├── scripts/
+│   └── sync_skills.sh
 └── CLAUDE.md
 ```
 
@@ -810,6 +818,19 @@ apps/<app_name>/
 > **If you already did Section 4.7 and/or 4.9 from a local checkout**,
 > skip the matching copy commands above — don't fetch `commands/` or
 > `api_handlers/` twice from two different sources.
+
+**Keep the app up to date:** when the skills repo changes, do not repeat
+the copy steps above. Run the script that Step 2 copied into the app:
+
+```bash
+cd apps/<app_name>
+scripts/sync_skills.sh
+```
+
+It clones the latest skills repo to a temp folder, updates
+`.claude/skills/`, `CLAUDE.md`, `commands/`, `utils/api_handlers/` and
+itself, then deletes the clone. It does not change `hooks.py`, and it
+does not commit. See "Update an app repo" in the skills repo `README.md`.
 
 ---
 
@@ -1048,7 +1069,8 @@ After completing all the steps above, your app's root directory should look like
 │           ├── error_messages.py
 │           └── response_formatter.py
 ├── scripts/
-│   └── check_max_lines.py
+│   ├── check_max_lines.py
+│   └── sync_skills.sh            # copied from this skills repo's scripts/
 ├── .eslintrc
 ├── .flake8
 ├── .gitignore
@@ -1098,6 +1120,6 @@ After completing all the steps above, your app's root directory should look like
 | 14 | Copy app `utils/api_handlers/` package | from `project_base_template/api_handlers/` → `<app_name>/utils/api_handlers/` |
 | 15 | Wire `after_request` in `hooks.py` | See Section 4.9 |
 | 16 | Clone skills repo to scratch location | `git clone https://github.com/8848digital/skills.git /tmp/8848-skills` |
-| 17 | Copy `.claude/skills/`, `CLAUDE.md`, `commands/`, `utils/api_handlers/` into the app, discard the clone | See Section 4.10 (can replace rows 11 & 14 if not already done from a local checkout) |
+| 17 | Copy `.claude/skills/`, `CLAUDE.md`, `commands/`, `utils/api_handlers/`, `scripts/sync_skills.sh` into the app, discard the clone | See Section 4.10 (can replace rows 11 & 14 if not already done from a local checkout) |
 | 18 | Set up GitHub Actions workflow | `.github/workflows/linters.yml` (choose new vs existing version) |
 | 19 | Verify structure | Compare against Section 6 |

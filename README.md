@@ -32,7 +32,9 @@ A collection of agent skills for building [Frappe Framework](https://frappeframe
 │       ├── draft-security-advisory/
 │       └── resolve-backport-conflicts/
 ├── CLAUDE.md                    # standing instructions — read at the start of every session
-└── project_base_template/       # templates used when scaffolding a new custom Frappe app
+├── project_base_template/       # templates used when scaffolding a new custom Frappe app
+└── scripts/
+    └── sync_skills.sh           # update an app repo from this repo
 ```
 
 ## Install (into your own app repo)
@@ -66,6 +68,57 @@ If you're setting up a full custom Frappe app (linters, pre-commit,
 CodeGraph, `commands/`, `utils/api_handlers/`, etc.), see
 [`project_base_template/custom_app_setup.md`](./project_base_template/custom_app_setup.md#410-agent-tooling--templates-skills-folder-claudemd-commands-utilsapi_handlers)
 §4.10, which covers this as one step of the full setup.
+
+## Update an app repo
+
+`scripts/sync_skills.sh` updates an app repo that is already set up (see
+[`custom_app_setup.md`](./project_base_template/custom_app_setup.md) §4.10).
+It does not set up a new app. It gets the latest version of this repo,
+then updates these parts of the app:
+
+| From this repo | To the app |
+| -------------- | ---------- |
+| `.claude/skills/` | `.claude/skills/` |
+| `CLAUDE.md` | `CLAUDE.md` |
+| `project_base_template/commands/` | `<app_name>/commands/` |
+| `project_base_template/api_handlers/` | `<app_name>/utils/api_handlers/` (with `<app_name>` replaced) |
+| `scripts/sync_skills.sh` | `scripts/sync_skills.sh` (the script itself) |
+
+**Each time this repo changes**, go to the app repo and run the copy of
+the script that is in the app:
+
+```bash
+cd ~/frappe-bench/apps/<your-app>
+scripts/sync_skills.sh              # update the app
+scripts/sync_skills.sh --dry-run    # only show what would change
+```
+
+The script clones the latest version of this repo to a temp folder, runs
+the script from that clone, then deletes the clone. Thus the newest
+version of the script always runs, and the app gets the new script too.
+The script clones the `8848-skills` branch, and uses your normal git
+access to GitHub. To use a different repo or branch, set
+`SKILLS_REPO_URL` or `SKILLS_BRANCH`.
+
+**First time, for an app that does not have `scripts/sync_skills.sh` yet**
+(an app set up before the script existed), run the script once from a
+clone of this repo:
+
+```bash
+git clone https://github.com/8848digital/skills.git /tmp/8848-skills
+/tmp/8848-skills/scripts/sync_skills.sh ~/frappe-bench/apps/<your-app>
+rm -rf /tmp/8848-skills
+```
+
+The script runs at app level only. It refuses a bench root, a sub-folder
+of an app, a folder that is not a Frappe app repo, and an app that has no
+`.claude/skills/` or `CLAUDE.md` yet. It keeps project-local skills and
+other files in `commands/` and `utils/api_handlers/`. It removes a skill
+from the app when that skill is removed from this repo. It skips
+`commands/` or `utils/api_handlers/` if the app does not have that folder.
+It stops if the app has uncommitted changes in the updated paths, unless
+you add `--force`. It does not commit. Review and commit the changes in
+the app. Run `scripts/sync_skills.sh --help` for all options.
 
 ## Usage
 
