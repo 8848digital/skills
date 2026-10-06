@@ -24,6 +24,10 @@ description: >-
 - Before running `bench start`, check if it's already running in an existing terminal. Do not start a second instance.
 - Always pass `--site <site>` explicitly to bench commands. Never run bare `bench migrate`.
 - Every function/method/class written in this app needs a docstring (see `code-style` SKILL.md), and every `.py`/`.js`/`.md` file needs the copyright header (see [licensing.md](./references/licensing.md)) — these apply regardless of which feature reference below is in play.
+- Before starting any task that changes files, confirm the GitHub issue for
+  it (issue-first workflow in `CLAUDE.md`, mandatory). Ask the user for the
+  issue number. If there is none, offer to create one. The PR must link the
+  issue with `Closes #<issue>`.
 - Before ending any task that created or modified files, run through
   `quality-code-review`'s §0 Project hygiene checklist (docstrings, copyright
   headers, README/SETUP updates, structural conventions) — a lightweight
