@@ -330,6 +330,7 @@ module, never one shared copy at the app root.
 | **Print formats** | One sub-folder per format under `print_format/`. Each folder must contain `__init__.py` + the JSON definition. |
 | **Web forms** | One sub-folder per form under `web_form/`. Each folder must contain `__init__.py`, `.json`, `.py` (server script), and `.js` (client script). |
 | **Max line length** | Enforced by `scripts/check_max_lines.py`. Run it in CI and locally before committing. |
+| **Issue-first workflow** | **Mandatory.** Every change to a repo — feature, fix, optimization, refactor, docs, config, dependency, any task, whether a person or an AI agent does it — starts from a GitHub issue. Raise the issue first, then open a PR against that issue. No issue, no PR, no merge. See "Issue-first workflow" below. |
 | **Commit messages** | Follow Conventional Commits (enforced by `commitlint.config.js`). |
 | **Version bump policy** | App version follows `a.b.c` (in `pyproject.toml` / `<app_name>/__init__.py`'s `__version__`). `a` (major) is bumped manually, by the developer's own decision — never inferred automatically. `b` (minor) must be bumped whenever a change landing on `develop`, `master`, or the default branch includes a **database change** — creating/altering a table (new DocType, new/changed field with a schema effect) or a migration-driven insert/update of records (a patch in `patches.txt`). `c` (patch) is bumped for any other change with no database change (docs, refactors, non-schema logic fixes). |
 | **README.md** | Every app ships a functional `README.md` at repo root per [readme.md](./.claude/skills/frappe-app-dev/references/readme.md) — what the app does, not how it's structured. |
@@ -337,6 +338,32 @@ module, never one shared copy at the app root.
 | **SETUP.md** | Every app with an external integration or a Settings-style DocType ships a `SETUP.md` at repo root per [setup.md](./.claude/skills/frappe-app-dev/references/setup.md), listing mandatory fields/credentials. |
 | **license.txt** | Mandatory in every repo, verbatim, per [licensing.md](./.claude/skills/frappe-app-dev/references/licensing.md). |
 | **File headers** | Every `.py` and `.js` file (and `.md` docs) carries the copyright header from [licensing.md](./.claude/skills/frappe-app-dev/references/licensing.md). JSON files are exempt (no comment syntax). |
+
+---
+
+## Issue-first workflow
+
+This rule is **mandatory** for every change in every repo: a feature, a
+fix, an optimization, a refactor, a docs or config change, a dependency
+update, or any other task. It applies the same way to work that a person
+does by hand and to work given to an AI agent.
+
+1. **Raise the issue first.** Before you change code, make sure a GitHub
+   issue exists for the work. The issue states the problem or the goal,
+   and the expected result. If no issue exists, create one.
+2. **Create a branch** from the target branch for that issue.
+3. **Make the change** on that branch only.
+4. **Reference the issue in each commit** with `Refs #<issue>`.
+5. **Open a PR against the issue.** The PR description starts with
+   `Closes #<issue>` (or `Fixes #<issue>`), so GitHub links the two and
+   closes the issue on merge.
+6. **One issue for each PR.** A PR without a linked issue is not
+   reviewed and not merged.
+
+**For AI agents:** before you start any task that changes files in a repo,
+ask the user for the issue number. If there is no issue, offer to create
+one, and create it only after the user agrees. Do not open a PR that has
+no linked issue.
 
 ---
 
@@ -438,6 +465,10 @@ surface, not just one module's:
 
 ## Anti-patterns
 
+- **Don't change a repo without an issue.** Every change — by a person or
+  by an AI agent — starts from a GitHub issue, and its PR links that issue
+  with `Closes #<issue>`. A PR with no linked issue is not merged. See
+  "Issue-first workflow" above.
 - **Don't dump unrelated helpers into `utils/common.py`.** It's for truly
   generic, cross-cutting helpers used by many unrelated modules — not a
   catch-all. Prefer a file scoped to what the function does

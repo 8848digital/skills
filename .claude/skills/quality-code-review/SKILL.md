@@ -58,6 +58,10 @@ one found; none of them require deep reading.
   `api/` outside `<module_name>/api/`, no `@frappe.whitelist()` outside
   `<module_name>/api/`, `customization/` (never `custom/`) used only for
   DocTypes owned elsewhere — see `CLAUDE.md`.
+- **PR is linked to an issue** — the PR description has `Closes #<issue>`
+  (or `Fixes #<issue>`) and the issue exists. The issue-first workflow in
+  `CLAUDE.md` is mandatory for every change: a PR with no linked issue is a
+  blocking finding, not a nit.
 - **Version bumped per CLAUDE.md's versioning rule** when the diff lands on
   `develop`, `master`, or the default branch: bump `b` (minor) if the diff
   includes a database change (new/altered DocType schema, or a
