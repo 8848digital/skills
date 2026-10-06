@@ -23,7 +23,7 @@ SENTENCES
 - No contractions. Use articles: a, an, the, this, these.
 
 PUNCTUATION
-- No semicolons. Write two sentences. (Note: the em dash is not banned by STE, only the semicolon is — add "no em dash" yourself if you want it gone.)
+- No semicolons. Write two sentences. STE bans the semicolon, not the em dash.
 
 STRUCTURE
 - One topic per paragraph, max six sentences. For steps, use a numbered vertical list, one action per item, imperative form. Put a condition before its command.

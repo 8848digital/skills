@@ -75,7 +75,7 @@ git diff HEAD
 
 The first command must print nothing. Read every line that the second command prints. Compare `git diff HEAD~1` against `gh pr diff <N>`. Apart from branch differences, the two diffs must match.
 
-If the repository has a linter or a formatter, run it on the files you changed. While one marker remains, do not continue.
+If the repository has a linter or a formatter, run it on the files you changed.
 
 ### 6. Commit and push
 

@@ -85,4 +85,4 @@ If the report supplies its own CVSS or CWE, validate it; where your analysis dis
 
 ## Final check
 
-The advisory is complete when the body is exactly Impact + Workarounds, every form field above has a value, the CVSS score falls in the stated severity band, and a re-read of the title and Impact finds zero instance-level identifiers.
+Re-read the title and the Impact section. They must hold zero instance-level identifiers.
