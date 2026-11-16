@@ -11,6 +11,12 @@ This guide tells you how to add the 8848 skills to a Frappe app, and how
 to keep them up to date. Each case has manual steps and a prompt that you
 can give to Claude Code.
 
+> **Video:** the
+> [video walkthrough](https://github.com/8848digital/skills/releases/tag/setup-video-2026-11)
+> (8 minutes, with captions) shows Claude Code do each case of this guide
+> with the prompts below.
+> The release also has a subtitle file (`.srt`) and a chapter list.
+
 ## Contents
 
 1. [What goes into an app](#what-goes-into-an-app)
