@@ -246,12 +246,24 @@ sync_api_handlers() {
 
 sync_self() {
 	# Copy this script into the app's scripts/ folder, so the app can run
-	# the next update without a skills repo clone.
-	local dest="$TARGET/scripts/sync_skills.sh"
+	# the next update without a skills repo clone. The app's copy can be
+	# the script that started this run, and bash reads a running script
+	# while it runs. Thus write a temp file and move it over the old file:
+	# the move gives a new inode, and the running bash keeps the old one.
+	local dest="$TARGET/scripts/sync_skills.sh" tmp
 	echo "--- scripts/sync_skills.sh"
-	[[ $DRY_RUN -eq 1 ]] || mkdir -p "$TARGET/scripts"
-	update_file "$SCRIPT_PATH" "$dest"
-	[[ $DRY_RUN -eq 1 ]] || chmod +x "$dest"
+	cmp -s "$SCRIPT_PATH" "$dest" && return 0
+	if [[ -f "$dest" ]]; then
+		echo "    update  scripts/sync_skills.sh"
+	else
+		echo "    add     scripts/sync_skills.sh"
+	fi
+	[[ $DRY_RUN -eq 1 ]] && return 0
+	mkdir -p "$TARGET/scripts"
+	tmp="$(mktemp "$TARGET/scripts/.sync_skills.sh.XXXXXX")"
+	cp "$SCRIPT_PATH" "$tmp"
+	chmod +x "$tmp"
+	mv -f "$tmp" "$dest"
 }
 
 update_file() {
