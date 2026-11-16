@@ -43,9 +43,9 @@ A collection of agent skills for building [Frappe Framework](https://frappeframe
 For the full guide, with a Claude Code prompt for each case (new app,
 existing app, update), see [SETUP.md](./SETUP.md).
 
-To see each case run in a terminal, watch the
+To see Claude Code do each case with these prompts, watch the
 [video walkthrough](https://github.com/8848digital/skills/releases/tag/setup-video-2026-11)
-(13 minutes, with captions).
+(8 minutes, with captions).
 
 Claude Code auto-discovers project-scoped skills only under
 `.claude/skills/<skill-name>/SKILL.md` at your repo root, and loads

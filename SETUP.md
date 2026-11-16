@@ -13,7 +13,8 @@ can give to Claude Code.
 
 > **Video:** the
 > [video walkthrough](https://github.com/8848digital/skills/releases/tag/setup-video-2026-11)
-> (13 minutes, with captions) runs each case of this guide in a terminal.
+> (8 minutes, with captions) shows Claude Code do each case of this guide
+> with the prompts below.
 > The release also has a subtitle file (`.srt`) and a chapter list.
 
 ## Contents
